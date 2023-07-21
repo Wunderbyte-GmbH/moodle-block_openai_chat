@@ -23,8 +23,6 @@
  */
 
 use block_openai_chat\tables\admin_table;
-use bock_openai_chat;
-use local_wunderbyte_table\wunderbyte_table;
 
 require_once(__DIR__ . '/../../config.php');
 require_login();
@@ -69,7 +67,7 @@ $table->define_columns(array_keys($columns));
 $from = "{block_openai_chat_protocol} ocp
         LEFT JOIN {user} u ON ocp.userid=u.id
         LEFT JOIN {user} um ON ocp.usermodified=um.id";
-        
+
 
 $sqlinsert = $DB->sql_concat('u.firstname','u.lastname');
 $sqlinsert2 = $DB->sql_concat('um.firstname','um.lastname');
@@ -77,9 +75,9 @@ $sqlinsert2 = $DB->sql_concat('um.firstname','um.lastname');
 $table->set_filter_sql("ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodified, um.firstname umfirstname, um.lastname umlastname", $from, '1=1', '');
 $table->define_cache('block_openai_chat', 'admintable');
 
-$table->out(10, true); 
+$table->out(10, true);
 
-$PAGE->requires->js_call_amd('blocks/openai_chat/amd/action_button', 'init');
+$PAGE->requires->js_call_amd('block_openai_chat/action_button', 'init');
 echo $OUTPUT->footer();
 
 
