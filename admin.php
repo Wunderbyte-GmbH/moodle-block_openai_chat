@@ -43,8 +43,7 @@ $PAGE->set_url('/blocks/openai_chat/admin.php');
 echo $OUTPUT->header();
 
 
-$buttonHtml =  html_writer::tag('A', 'click me', ['class' => "btn btn-primary btn-openmodaladfinetuning"]);
-
+$buttonHtml = html_writer::tag('A', 'click me', ['class' => "btn btn-primary btn-openmodaladfinetuning"]);
 echo $buttonHtml;
 
 $columns = [
@@ -64,15 +63,24 @@ $table = new admin_table('openai_chatprotocol');
 $table->define_headers(array_values($columns));
 $table->define_columns(array_keys($columns));
 
-$from = "{block_openai_chat_protocol} ocp
-        LEFT JOIN {user} u ON ocp.userid=u.id
-        LEFT JOIN {user} um ON ocp.usermodified=um.id";
-
+$table->define_filtercolumns([
+    'id' => [
+        'localizedname' => get_string('id', 'local_wunderbyte_table')
+    ],
+    'model' => [
+                'localizedname' => get_string('model', 'block_openai_chat')
+            ]
+]);
 
 $sqlinsert = $DB->sql_concat('u.firstname','u.lastname');
 $sqlinsert2 = $DB->sql_concat('um.firstname','um.lastname');
 
-$table->set_filter_sql("ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodified, um.firstname umfirstname, um.lastname umlastname", $from, '1=1', '');
+$from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodified, um.firstname umfirstname, um.lastname umlastname
+            FROM {block_openai_chat_protocol} ocp
+        LEFT JOIN {user} u ON ocp.userid=u.id
+        LEFT JOIN {user} um ON ocp.usermodified=um.id) as s1";
+
+$table->set_filter_sql("*", $from, '1=1', '');
 $table->define_cache('block_openai_chat', 'admintable');
 
 $table->out(10, true);
