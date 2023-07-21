@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use \block_openai_chat\completion;
 use block_openai_chat\completion\rest_interface;
 
 require_once('../../../config.php');
