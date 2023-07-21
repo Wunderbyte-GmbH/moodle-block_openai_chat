@@ -43,7 +43,7 @@ $PAGE->set_url('/blocks/openai_chat/admin.php');
 echo $OUTPUT->header();
 
 
-$buttonHtml = html_writer::tag('A', 'click me', ['class' => "btn btn-primary btn-openmodaladfinetuning"]);
+$buttonHtml = html_writer::tag('A', 'Train model', ['class' => "btn btn-primary btn-openmodaladfinetuning"]);
 echo $buttonHtml;
 
 $columns = [
@@ -72,8 +72,8 @@ $table->define_filtercolumns([
             ]
 ]);
 
-$sqlinsert = $DB->sql_concat('u.firstname','u.lastname');
-$sqlinsert2 = $DB->sql_concat('um.firstname','um.lastname');
+$sqlinsert = $DB->sql_concat('u.firstname', "' '", 'u.lastname');
+$sqlinsert2 = $DB->sql_concat('um.firstname', "' '", 'um.lastname');
 
 $from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodified, um.firstname umfirstname, um.lastname umlastname
             FROM {block_openai_chat_protocol} ocp
@@ -82,6 +82,8 @@ $from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastna
 
 $table->set_filter_sql("*", $from, '1=1', '');
 $table->define_cache('block_openai_chat', 'admintable');
+
+$table->filteronloadinactive = true;
 
 $table->out(10, true);
 
