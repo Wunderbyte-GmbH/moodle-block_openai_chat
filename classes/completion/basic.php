@@ -24,7 +24,6 @@
 
 namespace block_openai_chat\completion;
 
-use block_openai_chat\completion;
 use block_openai_chat\event\answer_received;
 use context_system;
 
@@ -91,7 +90,6 @@ class basic extends \block_openai_chat\completion {
 
         $event = answer_received::create(array(
             'context' => context_system::instance(),
-            'response' => $response, 
             'other' => [
                 'curlbody' => $curlbody,
                 'response' => $response,

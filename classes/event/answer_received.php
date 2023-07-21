@@ -36,7 +36,7 @@ class answer_received extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'block_openai_chat_protocol';
+        // $this->data['objecttable'] = 'block_openai_chat_protocol';
     }
 
     /**
@@ -45,8 +45,7 @@ class answer_received extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' has created the newsletter issue with id '$this->objectid' " .
-                "with the course module id '$this->contextinstanceid'.";
+        return "The user with id '$this->userid' has asked a question and received an answer.";
     }
 
     /**
@@ -64,9 +63,6 @@ class answer_received extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/blocks/openai_chat/answerreceived.php',
-                array(NEWSLETTER_PARAM_ID => $this->contextinstanceid,
-                    NEWSLETTER_PARAM_ACTION => NEWSLETTER_ACTION_READ_ISSUE,
-                    NEWSLETTER_PARAM_ISSUE => $this->objectid));
+        return new \moodle_url('/blocks/openai_chat/admin.php');
     }
 }

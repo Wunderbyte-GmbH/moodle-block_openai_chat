@@ -95,7 +95,6 @@ class chat extends \block_openai_chat\completion {
 
         $event = answer_received::create(array(
             'context' => context_system::instance(),
-            'response' => $response, 
             'other' => [
                 'curlbody' => $curlbody,
                 'response' => $response,
