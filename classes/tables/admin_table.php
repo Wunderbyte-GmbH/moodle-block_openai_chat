@@ -15,17 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * The Wunderbyte table class is an extension of the tablelib table_sql class.
  *
- * @package    block_openai_chat
- * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package block_openai_chat
+ * @copyright 2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// phpcs:ignoreFile
+
+namespace block_openai_chat\tables;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_openai_chat';
-$plugin->version = 2023072400;
-$plugin->requires = 2020061513;
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.7.0';
+use local_wunderbyte_table\wunderbyte_table;
+use stdClass;
+
+/**
+ * Wunderbyte table demo class.
+ */
+class admin_table extends wunderbyte_table {
+
+    /**
+     * Decodes the Unix Timestamp
+     *
+     * @param stdClass $values
+     * @return string 
+     */
+    public function col_timemodified($values) {
+        return userdate($values->timemodified);
+    }
+
+    
+    
+}

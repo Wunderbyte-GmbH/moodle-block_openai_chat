@@ -18,13 +18,16 @@
  * Class providing completions for early models (GPT-3 and older)
  *
  * @package    block_openai_chat
- * @copyright  2023 Bryce Yoder <me@bryceyoder.com>
+ * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 
 namespace block_openai_chat\completion;
 
 use block_openai_chat\completion;
+use block_openai_chat\event\answer_received;
+use context_system;
+
 defined('MOODLE_INTERNAL') || die;
 
 class basic extends \block_openai_chat\completion {
@@ -85,6 +88,18 @@ class basic extends \block_openai_chat\completion {
         ));
 
         $response = $curl->post("https://api.openai.com/v1/engines/$this->model/completions", json_encode($curlbody));
+
+        $event = answer_received::create(array(
+            'context' => context_system::instance(),
+            'response' => $response, 
+            'other' => [
+                'curlbody' => $curlbody,
+                'response' => $response,
+                'userrequest' => $this->message,
+            ]
+        ));
+        $event->trigger();
+
         return $response;
     }
 }

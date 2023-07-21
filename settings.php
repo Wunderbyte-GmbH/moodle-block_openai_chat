@@ -18,9 +18,12 @@
  * Plugin settings
  *
  * @package    block_openai_chat
- * @copyright  2022 Bryce Yoder <me@bryceyoder.com>
+ * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use block_openai_chat\completion;
+use block_openai_chat\completion\rest_interface;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -88,12 +91,13 @@ $settings->add(new admin_setting_configcheckbox(
     0
 ));
 
+$models = rest_interface::get_models_names() ?? [0 => 'enter api key'];
 $settings->add(new admin_setting_configselect(
     'block_openai_chat/model',
     get_string('model', 'block_openai_chat'),
     get_string('modeldesc', 'block_openai_chat'),
     'text-davinci-003',
-    get_models()['models']
+    $models
 ));
 
 $settings->add(new admin_setting_configtext(

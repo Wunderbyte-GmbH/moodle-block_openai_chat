@@ -18,7 +18,7 @@
  * Language strings
  *
  * @package    block_openai_chat
- * @copyright  2022 Bryce Yoder <me@bryceyoder.com>
+ * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -84,6 +84,13 @@ $string['config_presence'] = "Presence penalty";
 $string['config_presence_help'] = "How much to penalize new tokens based on whether they appear in the text so far. Increases the model's likelihood to talk about new topics.";
 
 $string['defaultprompt'] = "Below is a conversation between a user and a support assistant for a Moodle site, where users go for online learning:";
+$string['id'] = 'ID';
+$string['userrequest'] = 'User request';
+$string['request'] = 'Request that Ai received';
+$string['answer'] = 'Answer';
+$string['usermodified'] = 'Last user modiefied';
+$string['timecreated'] = 'Time of creation';
+$string['timemodified'] = 'Last time modiefied';
 $string['defaultassistantname'] = 'Assistant';
 $string['defaultusername'] = 'User';
 $string['askaquestion'] = 'Ask a question...';

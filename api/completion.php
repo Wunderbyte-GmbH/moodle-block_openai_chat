@@ -18,11 +18,12 @@
  * API endpoint for retrieving GPT completion
  *
  * @package    block_openai_chat
- * @copyright  2022 Bryce Yoder <me@bryceyoder.com>
+ * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use \block_openai_chat\completion;
+use block_openai_chat\completion\rest_interface;
 
 require_once('../../../config.php');
 require_once($CFG->libdir . '/filelib.php');
@@ -71,7 +72,9 @@ foreach ($setting_names as $setting) {
     }
 }
 
-$engines = get_models()['types'];
+$modles = rest_interface::get_models_file() ?? [0 => 'enter api key'];
+$engines = $modles;
+
 $model = get_config('block_openai_chat', 'model');
 if (get_config('block_openai_chat', 'allowinstancesettings') === "1" && $block_settings['model']) {
     $model = $block_settings['model'];

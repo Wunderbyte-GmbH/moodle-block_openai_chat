@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Definition of log events
  *
- * @package    block_openai_chat
- * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
+ * @package    mod_openai_chat
+ * @copyright  2013 Ivan Šakić <ivan.sakic3@gmail.com>
+ * @copyright  2015 onwards David Bogner <info@edulabs.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_openai_chat';
-$plugin->version = 2023072400;
-$plugin->requires = 2020061513;
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.7.0';
+$logs = array(
+    array('module' => 'openai_chat', 'action' => 'add', 'mtable' => 'openai_chat', 'field' => 'name'),
+    array('module' => 'openai_chat', 'action' => 'update', 'mtable' => 'openai_chat', 'field' => 'name'),
+    array('module' => 'openai_chat', 'action' => 'view', 'mtable' => 'openai_chat', 'field' => 'name'),
+    array('module' => 'openai_chat', 'action' => 'view all', 'mtable' => 'openai_chat',
+        'field' => 'name'));

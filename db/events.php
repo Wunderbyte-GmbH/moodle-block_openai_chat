@@ -15,17 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Add event handlers for the assign
  *
  * @package    block_openai_chat
- * @copyright  2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
+ * @category   event
+ * @copyright 2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_openai_chat';
-$plugin->version = 2023072400;
-$plugin->requires = 2020061513;
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.7.0';
+$observers = array(
+
+    array(
+        'eventname' => '\block_openai_chat\event\answer_received',
+        'callback' => 'block_openai_chat_observer::answer_received',
+    ),
+);
