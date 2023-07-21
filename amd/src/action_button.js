@@ -1,4 +1,3 @@
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,31 +20,36 @@
  */
 
 import ModalForm from 'core_form/modalform';
-import Ajax from 'core/ajax';
-import Url from 'core/url';
-import {showNotification} from 'local_shopping_cart/notifications';
-import ModalForm from 'core_form/modalform';
-import {reinit} from 'local_shopping_cart/cart';
-import {get_string as getString} from 'core/str';
 
-export const init = (userid = 0) => { 
-  console.log('init');
-  const manualrebookbtn = document.querySelector('A');
-
-  if (manualrebookbtn) {
-    manualrebookbtn.addEventListener('click', (e) => input_modal());
-  }
+export function init() {
+  console.log("init");
+  const btn = document.querySelector("#page-blocks-openai_chat-admin a.btn-openmodaladfinetuning");
+  console.log(btn);
+  btn.addEventListener('click', e => {
+    console.log(e);
+  });
 }
 
-export function input_modal() {
-  const modalForm = new ModalForm({
-    formClass: "block_openai_chat\\classes\\form\\modal_input",
-  });
+export function confirmCancelAllUsersAndSetCreditModal() {
 
-  modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
-    const response = e.detail;
-    console.log('rebookOrderidModal response: ', response);
-  });
+    const modalForm = new ModalForm({
 
-  modalForm.show();
+        // Name of the class where form is defined (must extend \core_form\dynamic_form):
+        formClass: "blocks_openai_chat\\form\\modal_input",
+        // Add as many arguments as you need, they will be passed to the form:
+    });
+    // Listen to events if you want to execute something on form submit.
+    // Event detail will contain everything the process() function returned:
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+        window.console.log(e.detail);
+
+        // Reload window after cancelling.
+        window.location.reload();
+
+        // eslint-disable-next-line no-console
+        console.log('confirmCancelAllUsersAndSetCreditModal: form submitted');
+    });
+
+    // Show the form.
+    modalForm.show();
 }

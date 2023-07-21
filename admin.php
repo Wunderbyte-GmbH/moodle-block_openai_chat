@@ -40,12 +40,12 @@ if (!has_capability('moodle/site:config', $syscontext)) {
 
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_url('/local/wunderbyte_table/demo.php');
+$PAGE->set_url('/blocks/openai_chat/admin.php');
 
 echo $OUTPUT->header();
 
 
-$buttonHtml =  html_writer::tag('A', 'click me', ['class' => "btn btn-primary"]);
+$buttonHtml =  html_writer::tag('A', 'click me', ['class' => "btn btn-primary btn-openmodaladfinetuning"]);
 
 echo $buttonHtml;
 
@@ -79,7 +79,7 @@ $table->define_cache('block_openai_chat', 'admintable');
 
 $table->out(10, true); 
 
-$PAGE->requires->js_call_amd('block_openai_chat/amd/action_button', 'init');
+$PAGE->requires->js_call_amd('blocks/openai_chat/amd/action_button', 'init');
 echo $OUTPUT->footer();
 
 
