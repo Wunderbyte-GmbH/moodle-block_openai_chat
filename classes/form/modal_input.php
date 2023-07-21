@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace blocks\openai_chat\classes\form;
+namespace block_openai_chat\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,7 +30,7 @@ use stdClass;
  * Modal form (dynamic form) for cashier manual rebooking.
  *
  * @copyright   Wunderbyte GmbH <info@wunderbyte.at>
- * @package     blocks_openai_chat
+ * @package     block_openai_chat
  * @author      2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -54,7 +54,7 @@ class modal_input extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-        require_capability('local/shopping_cart:cashiermanualrebook', $this->get_context_for_dynamic_submission());
+        require_capability('moodle/site:config', $this->get_context_for_dynamic_submission());
     }
 
     /**
