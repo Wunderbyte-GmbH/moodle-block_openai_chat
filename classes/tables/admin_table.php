@@ -39,12 +39,54 @@ class admin_table extends wunderbyte_table {
      * Decodes the Unix Timestamp
      *
      * @param stdClass $values
-     * @return string 
+     * @return string
      */
     public function col_timemodified($values) {
         return userdate($values->timemodified);
     }
 
-    
-    
+    /**
+     * Decodes the Unix Timestamp
+     *
+     * @param stdClass $values
+     * @return string
+     */
+    public function col_timecreated($values) {
+        return userdate($values->timemodified);
+    }
+
+    public function col_answer($values) {
+
+        $jsonobject = json_decode($values->answer);
+        $text = $jsonobject->choices[0]->text ?? 'No valid response';
+
+        return '
+        <a type="button" data-toggle="modal" data-target="#staticBackdrop">
+        ' . $text . '
+        </a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            ' . $values->answer . '
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>';
+
+
+
+    }
+
 }

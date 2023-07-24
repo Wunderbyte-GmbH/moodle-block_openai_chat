@@ -62,6 +62,7 @@ $table = new admin_table('openai_chatprotocol');
 
 $table->define_headers(array_values($columns));
 $table->define_columns(array_keys($columns));
+$table->define_sortablecolumns(array_keys($columns));
 
 $table->define_filtercolumns([
     'id' => [
@@ -84,6 +85,12 @@ $table->set_filter_sql("*", $from, '1=1', '');
 $table->define_cache('block_openai_chat', 'admintable');
 
 $table->filteronloadinactive = true;
+$table->pageable(true);
+
+$table->stickyheader = true;
+$table->showcountlabel = true;
+$table->showdownloadbutton = true;
+$table->showrowcountselect = true;
 
 $table->out(10, true);
 
