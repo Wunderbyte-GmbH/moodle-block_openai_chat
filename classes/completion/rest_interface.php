@@ -52,14 +52,26 @@ class rest_interface {
         $response = curl_exec($curl);
         curl_close($curl);
         
-        return $response;
+        $models = json_decode($response, true) ?? [];
+
+        // Add our custom python model
+        $custom_models = [
+            'id' => 'custom',
+        ];
+
+        if (!isset($models['data'])) {
+            $models['data'] = $custom_models;
+        } else {
+            $models['data'][] = $custom_models;
+        }
+
+        return $models;
     }
 
     public static function get_models_names() {
-        $response = self::get_models();
-        $models = json_decode($response, true);
+        $models = self::get_models();
         
-        if ($models === null || !isset($models['data'])) {
+        if (!isset($models['data'])) {
             return array();
         }
 
@@ -72,8 +84,7 @@ class rest_interface {
     }
     
     public static function get_models_file() {
-    $response = self::get_models();
-    $models = json_decode($response, true);
+    $models = self::get_models();
 
     if ($models === null || !isset($models['data'])) {
         return array();
@@ -83,7 +94,10 @@ class rest_interface {
     foreach ($models['data'] as $model) {
         $modelName = $model['id'];
         
-        if (stripos($modelName, 'turbo') !== false) {
+        if ($modelName === 'custom') {
+            $formattedName = str_pad($modelName, 4, '0', STR_PAD_LEFT);
+            $modelIdsAndNames[$formattedName] = 'python';
+        } else if (stripos($modelName, 'turbo') !== false) {
             $formattedName = str_pad($modelName, 4, '0', STR_PAD_LEFT);
             $modelIdsAndNames[$formattedName] = 'chat';
         } else {
