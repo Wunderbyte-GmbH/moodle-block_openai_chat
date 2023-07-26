@@ -39,8 +39,9 @@ class python extends \block_openai_chat\completion {
         global $CFG;
 
         $config = get_config('mlbackend_python');
-        $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
-        $this->pathtoscript = "/var/www/html/blocks/openai_chat/python/custom.py"; // TODO read at runtime
+        // $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
+        $this->pathtopython =  "/usr/bin/python3";
+        $this->pathtoscript = "/Applications/MAMP/htdocs/moodle401/blocks/openai_chat/python/custom.py"; // TODO read at runtime
         parent::__construct($model, $message, $history, $block_settings);
     }
 
@@ -53,10 +54,8 @@ class python extends \block_openai_chat\completion {
             $this->prompt .= get_string('sourceoftruthreinforcement', 'block_openai_chat');
         }
         $this->prompt .= "\n\n";
-
         $history_string = $this->format_history();
         $history_string .= $this->username . ": ";
-
         return $this->exec_script($history_string);
     }
 
