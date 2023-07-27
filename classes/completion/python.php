@@ -35,7 +35,7 @@ class python extends \block_openai_chat\completion {
     private string $pathtopython;
     private string $pathtoscript;
 
-    public function __construct($model, $message, $history, $block_settings) {
+    public function __construct($model, $message, $history, $block_settings) { 
         global $CFG;
 
         $config = get_config('mlbackend_python');

@@ -10,7 +10,7 @@ logging.debug(f"""CLI Arguments: {sys.argv[1:]}""")
 
 id = "JUST_A_TEST_ID"
 text = f"""{sys.argv[1:]}"""
-prompt_tokens = 123
+prompt_tokens = 123 
 completion_tokens = 234
 total_tokens = 357
 response = {

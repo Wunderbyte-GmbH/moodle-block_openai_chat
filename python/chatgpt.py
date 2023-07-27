@@ -17,4 +17,4 @@ def chatgpt(query):
         return index.query(query)
 
     except Exception as e:
-        return "An error occurred:", e
+        return "An error occurred:", e 
