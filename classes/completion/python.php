@@ -35,13 +35,14 @@ class python extends \block_openai_chat\completion {
     private string $pathtopython;
     private string $pathtoscript;
 
-    public function __construct($model, $message, $history, $block_settings) { 
+    public function __construct($model, $message, $history, $block_settings) {
         global $CFG;
 
         $config = get_config('mlbackend_python');
         // $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
         $this->pathtopython =  "/usr/bin/python3";
-        $this->pathtoscript = "/Applications/MAMP/htdocs/moodle401/blocks/openai_chat/python/custom.py"; // TODO read at runtime
+
+        $this->pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/custom.py"; // TODO read at runtime
         parent::__construct($model, $message, $history, $block_settings);
     }
 

@@ -34,7 +34,7 @@ class rest_interface {
     {
         $curl = curl_init();
         $apikey = get_config('block_openai_chat', 'apikey');
-    
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.openai.com/v1/models',
             CURLOPT_RETURNTRANSFER => true,
@@ -48,10 +48,10 @@ class rest_interface {
                 'Authorization: Bearer ' . $apikey
             ),
         ));
-    
+
         $response = curl_exec($curl);
         curl_close($curl);
-        
+
         $models = json_decode($response, true) ?? [];
 
         // Add our custom python model
@@ -60,7 +60,7 @@ class rest_interface {
         ];
 
         if (!isset($models['data'])) {
-            $models['data'] = $custom_models;
+            $models['data'] = [$custom_models];
         } else {
             $models['data'][] = $custom_models;
         }
@@ -70,7 +70,7 @@ class rest_interface {
 
     public static function get_models_names() {
         $models = self::get_models();
-        
+
         if (!isset($models['data'])) {
             return array();
         }
@@ -79,10 +79,10 @@ class rest_interface {
         foreach ($models['data'] as $model) {
             $modelIdsAndNames[$model['id']] = $model['id'];
         }
-    
+
         return $modelIdsAndNames;
     }
-    
+
     public static function get_models_file() {
     $models = self::get_models();
 
@@ -93,7 +93,7 @@ class rest_interface {
     $modelIdsAndNames = array();
     foreach ($models['data'] as $model) {
         $modelName = $model['id'];
-        
+
         if ($modelName === 'custom') {
             $formattedName = str_pad($modelName, 4, '0', STR_PAD_LEFT);
             $modelIdsAndNames[$formattedName] = 'python';
@@ -109,5 +109,5 @@ class rest_interface {
     return $modelIdsAndNames;
 }
 
-    
+
 }
