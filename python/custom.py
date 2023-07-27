@@ -3,13 +3,14 @@
 import sys
 import json
 import logging
-import chatgpt
+from test import testen
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 logging.debug(f"""CLI Arguments: {sys.argv[1:]}""")
+x = testen("mystring")
 
 id = "JUST_A_TEST_ID"
-text = chatgpt.chatgpt(sys.argv[1:])
+text = x
 prompt_tokens = 123
 completion_tokens = 234
 total_tokens = 357
@@ -32,9 +33,7 @@ response = {
     "total_tokens": total_tokens
   }
 }
-#query = "Wie lang kann eine Studienunterbrechung andauern" für chatgpt
-# result = chatgpt.chatgpt(query) für chatgpt
-# print(result) für chatgpt
-# Everything that is printed is returned as output to the calling PHP function für chatgpt
-print(response)
+
+#print(x)
+print(json.dumps(response))
 exit(0)
