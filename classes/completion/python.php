@@ -78,7 +78,7 @@ class python extends \block_openai_chat\completion {
      */
     private function exec_script($history_string) {
         $arguments = escapeshellarg($this->sourceoftruth . $this->prompt . $history_string . $this->message . "\n" . $this->assistantname . ':');
-        $cmd = $this->pathtopython . ' ' . $this->pathtoscript . ' ' . $arguments;
+        $cmd = $this->pathtopython . ' ' . $this->pathtoscript . ' ' . $arguments . ' 2>&1';
 
         $output = null;
         $exitcode = null;

@@ -35,5 +35,5 @@ response = {
 }
 
 #print(x)
-print(json.dumps(response))
+print(response)
 exit(0)
