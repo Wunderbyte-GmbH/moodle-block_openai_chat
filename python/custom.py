@@ -7,7 +7,7 @@ from test import testen
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 logging.debug(f"""CLI Arguments: {sys.argv[1:]}""")
-x = testen("mystring")
+x = testen(str(sys.argv[1]))
 
 id = "JUST_A_TEST_ID"
 text = x
