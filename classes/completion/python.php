@@ -86,22 +86,28 @@ class python extends \block_openai_chat\completion {
         /**
          * @var JSON
          */
-        $result = exec($cmd, $output, $exitcode);
+        $response = exec($cmd, $output, $exitcode);
 
-        if (!$result) {
+        if (!$response) {
             throw new \moodle_exception('Could not execute script');
         }
 
-        //$event = answer_received::create(array(
-        //    'context' => context_system::instance(),
-        //    'other' => [
-        //        'arguments' => $arguments,
-        //        'response' => $result,
-        //        'userrequest' => $this->message,
-        //    ]
-        //));
-        //$event->trigger();
+        // We build the curlbody to make sure we trigger a good event.
 
-        return $result;
+        $curlbody = [
+            "prompt" => escapeshellarg($this->sourceoftruth . $this->prompt . $history_string . $this->message . "\n" . $this->assistantname . ':'),
+        ];
+
+        $event = answer_received::create(array(
+            'context' => context_system::instance(),
+            'other' => [
+                'curlbody' => $curlbody,
+                'response' => $response,
+                'userrequest' => $this->message,
+            ]
+        ));
+        $event->trigger();
+
+        return $response;
     }
 }
