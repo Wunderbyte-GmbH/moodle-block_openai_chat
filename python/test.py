@@ -2,9 +2,10 @@
 
 # Overwrite the default sqlite3 libraries with the ones from the pysqlite3
 # package
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# Commented out, because it leads to an error if the pysqlite3 package is missing
+# __import__('pysqlite3')
+# import sys
+# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import os
 import logging

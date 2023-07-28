@@ -40,7 +40,7 @@ class python extends \block_openai_chat\completion {
 
         $config = get_config('mlbackend_python');
         // $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
-        $this->pathtopython =  "/usr/bin/python3";
+        $this->pathtopython =  "/var/www/moodleroot/blocks/openai_chat/python/bin/python3";
 
         $this->pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/custom.py"; // TODO read at runtime
         parent::__construct($model, $message, $history, $block_settings);
