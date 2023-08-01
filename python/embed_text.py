@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 text_array = []
-api_key = "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"
-openai.api_key = api_key
+openai.api_key = os.getenv("API_KEY")
 dir_path = os.path.join(os.getcwd(), 'documents')
 dir_full_path = os.path.join(dir_path, '*.txt')
 embeddings_filename = "embeddings.csv"
