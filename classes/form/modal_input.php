@@ -42,10 +42,11 @@ class modal_input extends dynamic_form {
      */
     public function definition() {
 
+        $maxbytes = 20000;
         $mform = $this->_form;
 
-        $mform->addElement('text', '');
-        $mform->addElement('text', '');
+        $options = array('subdirs' => 1, 'maxfiles' => -1, 'accepted_types'=>'*');
+        $mform->addElement('filemanager', 'attachments', '', null, $options);
     }
 
     /**
@@ -69,7 +70,28 @@ class modal_input extends dynamic_form {
     public function process_dynamic_submission() {
         global $USER;
 
-        $data = $this->get_data();
+        if ($data = $this->get_data()) {
+            // ... store or update $entry.
+            $context = context_system::instance();
+            // Now save the files in correct part of the File API.
+            file_save_draft_area_files(
+                // The $data->attachments property contains the itemid of the draft file area.
+                $data->attachments,
+        
+                // The combination of contextid / component / filearea / itemid
+                // form the virtual bucket that file are stored in.
+                $context->id,
+                'block_openai_chat',
+                'attachments',
+                1, // Could be dynamicly set to store diffrent files in diffrent blocks
+        
+                [
+                    'subdirs' => 1,
+                    'maxbytes' => 200000,
+                    'maxfiles' => -1,
+                ]
+            );
+        }
 
         return $data;
     }
@@ -85,7 +107,36 @@ class modal_input extends dynamic_form {
      *     $this->set_data(get_entity($this->_ajaxformdata['cmid']));
      */
     public function set_data_for_dynamic_submission(): void {
+        global $DB;
+
         $data = new stdClass();
+        $context = context_system::instance();
+    
+        // Get an unused draft itemid which will be used for this form.
+        $draftitemid = file_get_submitted_draft_itemid('attachments');
+        
+        // Copy the existing files which were previously uploaded
+        // into the draft area used by this form.
+        file_prepare_draft_area(
+            // The $draftitemid is the target location.
+            $draftitemid,
+        
+            // The combination of contextid / component / filearea / itemid
+            // form the virtual bucket that files are currently stored in
+            // and will be copied from.
+            $context->id,
+            'block_openai_chat',
+            'attachments',
+            1,
+            [
+                'subdirs' => 1,
+                'maxbytes' => 20000,
+                'maxfiles' => -1,
+            ]
+        );
+        
+        // Set the itemid of draft area that the files have been moved to.
+        $data->attachments = $draftitemid;
         $this->set_data($data);
     }
 
