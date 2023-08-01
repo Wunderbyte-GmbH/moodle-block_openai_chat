@@ -32,7 +32,7 @@ global $DB, $PAGE;
 $syscontext = context_system::instance();
 
 // Make sure only an admin can see this.
-if (!has_capability('moodle/site:config', $syscontext)) {
+if (!has_capability('block/openai_chat:viewprotocoll', $syscontext)) {
     die;
 }
 
