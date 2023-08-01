@@ -3,11 +3,11 @@
 import sys
 import json
 import logging
-from test import testen
+from answer import chat
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 logging.debug(f"""CLI Arguments: {sys.argv[1:]}""")
-x = testen(str(sys.argv[1]))
+x = chat("Wird der EMBA anerkannt")
 
 id = "JUST_A_TEST_ID"
 text = x
