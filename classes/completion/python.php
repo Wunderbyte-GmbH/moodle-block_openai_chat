@@ -33,6 +33,7 @@ defined('MOODLE_INTERNAL') || die;
 class python extends \block_openai_chat\completion {
 
     private string $pathtopython;
+    private string $pathtoenvi;
     private string $pathtoscript;
 
     public function __construct($model, $message, $history, $block_settings) {
@@ -43,6 +44,7 @@ class python extends \block_openai_chat\completion {
         $this->pathtopython =  "/usr/bin/python3";
 
         $this->pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/custom.py"; // TODO read at runtime
+        $this->pathtoenvi = $CFG->dirroot . "/blocks/openai_chat/python/setenvi.py";
         parent::__construct($model, $message, $history, $block_settings);
     }
 
@@ -78,7 +80,9 @@ class python extends \block_openai_chat\completion {
      */
     private function exec_script($history_string) {
         $arguments = escapeshellarg($this->sourceoftruth . $this->prompt . $history_string . $this->message . "\n" . $this->assistantname . ':');
+        $apikey = get_config('block_openai_chat', 'apikey');
         $cmd = $this->pathtopython . ' ' . $this->pathtoscript . ' ' . $arguments . ' 2>&1';
+        $cmd2 = $this->pathtopython . ' ' . $this->pathtoenvi . ' ' . $apikey . ' 2>&1';
 
         $output = null;
         $exitcode = null;
@@ -86,6 +90,7 @@ class python extends \block_openai_chat\completion {
         /**
          * @var JSON
          */
+        $response1 = exec($cmd2); // set key as environment variable
         $response = exec($cmd, $output, $exitcode);
 
         if (!$response) {
