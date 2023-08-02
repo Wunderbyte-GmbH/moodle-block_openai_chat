@@ -21,7 +21,7 @@ def calculate_similarity(vec1, vec2):
 def chat(query):
     start_chat = True
     while True:
-        openai.api_key = os.getenv("API_KEY")
+        openai.api_key = os.environ.get('apikey')
         question = query
 
         response = openai.Embedding.create(
