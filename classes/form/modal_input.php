@@ -48,6 +48,7 @@ class modal_input extends dynamic_form {
         // Add a text area element above the file upload field
         $mform->addElement('editor', 'description_editor', get_string('descriptionModal', 'block_openai_chat'), null);
         $mform->setType('description_editor', PARAM_RAW);
+        
 
         $options = array('subdirs' => 1, 'maxfiles' => -1, 'accepted_types'=>'*');
         $mform->addElement('filemanager', 'attachments', '', null, $options);
@@ -98,7 +99,9 @@ class modal_input extends dynamic_form {
                 ]
             );
         }
-        $arguments = $this->get_text_from_saved_files($data);
+
+        $text = $data->description_editor['text'];
+        $arguments = $this->get_text_from_saved_files($text);
         $cmd = $pathtopython . ' ' . $pathtoscript . ' ' . $arguments . ' 2>&1';
         $reponese = exec($cmd, $output);
         return $data;
@@ -187,34 +190,32 @@ class modal_input extends dynamic_form {
         return $data;
     }
 
-    public function get_text_from_saved_files($saved_data) {
-        // Check if the saved_data property exists and is an object with the attachments property.
-
+    public function get_text_from_saved_files($string) {
         $context = context_system::instance();
 
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'block_openai_chat', 'attachments');
         $contents = '';
 
+        $text_area_content = $this->filterTextBetweenTags($string);
+        $contents = $text_area_content;
+
         foreach ($files as $file) {
             $contents .= " " . $file->get_content();
         }
-
-        // if (isset($saved_data) && is_object($saved_data) && property_exists($saved_data, 'attachments')) {
-        //     // Replace 'block_openai_chat' and 'attachments' with your respective component and filearea.
-        //     $component = 'block_openai_chat';
-        //     $filearea = 'attachments';
-        //     $context = context_system::instance();
-
-        //     $texts = array(); // Array to store the text content of files.
-
-        //     $file_content = file_get_contents($saved_data->attachments->get_pathname());
-
-        //     return $texts;
-        // }
         $contents = preg_replace( "/<br>|\n/", " ", $contents );
         $contents = str_replace("  ", " ", $contents);
         return $contents;
     }
+
+    function filterTextBetweenTags($inputString) {
+        $pattern = '/>(.*?)</s';
+        preg_match_all($pattern, $inputString, $matches);
+        
+        // Concatenate all the matched strings and return
+        $filteredText = implode('', $matches[1]);
+        return $filteredText;
+    }
     
 }
+
