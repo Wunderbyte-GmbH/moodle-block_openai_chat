@@ -45,6 +45,10 @@ class modal_input extends dynamic_form {
         $maxbytes = 20000;
         $mform = $this->_form;
 
+        // Add a text area element above the file upload field
+        $mform->addElement('editor', 'description_editor', get_string('descriptionModal', 'block_openai_chat'), null);
+        $mform->setType('description_editor', PARAM_RAW);
+
         $options = array('subdirs' => 1, 'maxfiles' => -1, 'accepted_types'=>'*');
         $mform->addElement('filemanager', 'attachments', '', null, $options);
     }
@@ -68,7 +72,9 @@ class modal_input extends dynamic_form {
      * @return mixed
      */
     public function process_dynamic_submission() {
-        global $USER;
+        global $USER,$CFG;
+        $pathtopython = "/usr/bin/python3";
+        $pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/embed_text.py";
 
         if ($data = $this->get_data()) {
             // ... store or update $entry.
@@ -92,7 +98,9 @@ class modal_input extends dynamic_form {
                 ]
             );
         }
-
+        $arguments = $this->get_text_from_saved_files($data);
+        $cmd = $pathtopython . ' ' . $pathtoscript . ' ' . $arguments . ' 2>&1';
+        $reponese = exec($cmd, $output);
         return $data;
     }
 
@@ -178,4 +186,35 @@ class modal_input extends dynamic_form {
         $data = parent::get_data();
         return $data;
     }
+
+    public function get_text_from_saved_files($saved_data) {
+        // Check if the saved_data property exists and is an object with the attachments property.
+
+        $context = context_system::instance();
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($context->id, 'block_openai_chat', 'attachments');
+        $contents = '';
+
+        foreach ($files as $file) {
+            $contents .= " " . $file->get_content();
+        }
+
+        // if (isset($saved_data) && is_object($saved_data) && property_exists($saved_data, 'attachments')) {
+        //     // Replace 'block_openai_chat' and 'attachments' with your respective component and filearea.
+        //     $component = 'block_openai_chat';
+        //     $filearea = 'attachments';
+        //     $context = context_system::instance();
+
+        //     $texts = array(); // Array to store the text content of files.
+
+        //     $file_content = file_get_contents($saved_data->attachments->get_pathname());
+
+        //     return $texts;
+        // }
+        $contents = preg_replace( "/<br>|\n/", " ", $contents );
+        $contents = str_replace("  ", " ", $contents);
+        return $contents;
+    }
+    
 }
