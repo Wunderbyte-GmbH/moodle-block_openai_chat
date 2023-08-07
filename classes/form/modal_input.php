@@ -20,11 +20,15 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+use block_openai_chat\completion\python;
+use coding_exception;
 use context;
 use context_system;
 use core_form\dynamic_form;
+use dml_exception;
 use moodle_url;
 use stdClass;
+use stored_file;
 
 /**
  * Modal form (dynamic form) for cashier manual rebooking.
@@ -42,13 +46,7 @@ class modal_input extends dynamic_form {
      */
     public function definition() {
 
-        $maxbytes = 20000;
         $mform = $this->_form;
-
-        // Add a text area element above the file upload field
-        $mform->addElement('editor', 'description_editor', get_string('descriptionModal', 'block_openai_chat'), null);
-        $mform->setType('description_editor', PARAM_RAW);
-        
 
         $options = array('subdirs' => 1, 'maxfiles' => -1, 'accepted_types'=>'*');
         $mform->addElement('filemanager', 'attachments', '', null, $options);
@@ -74,8 +72,6 @@ class modal_input extends dynamic_form {
      */
     public function process_dynamic_submission() {
         global $USER,$CFG;
-        $pathtopython = "/usr/bin/python3";
-        $pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/embed_text.py";
 
         if ($data = $this->get_data()) {
             // ... store or update $entry.
@@ -84,14 +80,14 @@ class modal_input extends dynamic_form {
             file_save_draft_area_files(
                 // The $data->attachments property contains the itemid of the draft file area.
                 $data->attachments,
-        
+
                 // The combination of contextid / component / filearea / itemid
                 // form the virtual bucket that file are stored in.
                 $context->id,
                 'block_openai_chat',
                 'attachments',
                 1, // Could be dynamicly set to store diffrent files in diffrent blocks
-        
+
                 [
                     'subdirs' => 1,
                     'maxbytes' => 200000,
@@ -100,10 +96,11 @@ class modal_input extends dynamic_form {
             );
         }
 
-        $text = $data->description_editor['text'];
-        $arguments = $this->get_text_from_saved_files($text);
-        $cmd = $pathtopython . ' ' . $pathtoscript . ' ' . $arguments . ' 2>&1';
-        $reponese = exec($cmd, $output);
+        $textfromfiles = $this->get_text_from_saved_files();
+
+        $filepaths = $this->return_array_of_filepaths();
+        python::save_embeddings($filepaths);
+
         return $data;
     }
 
@@ -122,16 +119,16 @@ class modal_input extends dynamic_form {
 
         $data = new stdClass();
         $context = context_system::instance();
-    
+
         // Get an unused draft itemid which will be used for this form.
         $draftitemid = file_get_submitted_draft_itemid('attachments');
-        
+
         // Copy the existing files which were previously uploaded
         // into the draft area used by this form.
         file_prepare_draft_area(
             // The $draftitemid is the target location.
             $draftitemid,
-        
+
             // The combination of contextid / component / filearea / itemid
             // form the virtual bucket that files are currently stored in
             // and will be copied from.
@@ -145,7 +142,7 @@ class modal_input extends dynamic_form {
                 'maxfiles' => -1,
             ]
         );
-        
+
         // Set the itemid of draft area that the files have been moved to.
         $data->attachments = $draftitemid;
         $this->set_data($data);
@@ -190,15 +187,18 @@ class modal_input extends dynamic_form {
         return $data;
     }
 
-    public function get_text_from_saved_files($string) {
+    /**
+     * Return the text fromthe saved files.
+     * @return string|string[]|null
+     * @throws dml_exception
+     * @throws coding_exception
+     */
+    public function get_text_from_saved_files() {
         $context = context_system::instance();
 
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'block_openai_chat', 'attachments');
         $contents = '';
-
-        $text_area_content = $this->filterTextBetweenTags($string);
-        $contents = $text_area_content;
 
         foreach ($files as $file) {
             $contents .= " " . $file->get_content();
@@ -208,14 +208,20 @@ class modal_input extends dynamic_form {
         return $contents;
     }
 
-    function filterTextBetweenTags($inputString) {
-        $pattern = '/>(.*?)</s';
-        preg_match_all($pattern, $inputString, $matches);
-        
-        // Concatenate all the matched strings and return
-        $filteredText = implode('', $matches[1]);
-        return $filteredText;
+
+    public function return_array_of_filepaths() {
+        $context = context_system::instance();
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($context->id, 'block_openai_chat', 'attachments');
+
+        $returnarray = [];
+        foreach ($files as $file) {
+            $returnarray[] = $file->copy_content_to_temp();
+        }
+
+        return $returnarray;
     }
-    
+
 }
 

@@ -6,8 +6,16 @@ import logging
 from answer import chat
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-logging.debug(f"""CLI Arguments: {sys.argv[1:]}""")
-x = chat("Wird der EMBA anerkannt")
+logging.debug(f"sys.argv[1:]")
+
+data = f"{sys.argv[1]}"
+jsonobject = json.loads(data)
+
+# Pass on the message.
+
+message = jsonobject["sourceoftruth"] + jsonobject["prompt"] + jsonobject["historystring"] + jsonobject["message"] +" \n" + jsonobject["assistentname"]
+
+x = chat(message, jsonobject["apikey"], jsonobject["pathtoembeddings"])
 
 id = "JUST_A_TEST_ID"
 text = x

@@ -33,18 +33,14 @@ defined('MOODLE_INTERNAL') || die;
 class python extends \block_openai_chat\completion {
 
     private string $pathtopython;
-    private string $pathtoenvi;
     private string $pathtoscript;
 
     public function __construct($model, $message, $history, $block_settings) {
         global $CFG;
 
-        $config = get_config('mlbackend_python');
-        // $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
-        $this->pathtopython =  "/usr/bin/python3";
-
+        $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
         $this->pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/custom.py"; // TODO read at runtime
-        $this->pathtoenvi = $CFG->dirroot . "/blocks/openai_chat/python/setenvi.py";
+
         parent::__construct($model, $message, $history, $block_settings);
     }
 
@@ -79,18 +75,32 @@ class python extends \block_openai_chat\completion {
      * @return JSON: The response from OpenAI
      */
     private function exec_script($history_string) {
-        $arguments = escapeshellarg($this->sourceoftruth . $this->prompt . $history_string . $this->message . "\n" . $this->assistantname . ':');
+
+        global $USER, $CFG;
+
         $apikey = get_config('block_openai_chat', 'apikey');
+        $pathtoembeddings = $CFG->dirroot . "/blocks/openai_chat/python/embeddings.csv";
+
+        $payload = [
+            'sourceoftruth' => $this->sourceoftruth,
+            'prompt' => $this->prompt,
+            'historystring' => $history_string,
+            'message' => $this->message,
+            'assistentname' => $this->assistantname,
+            'username' => $this->username,
+            'apikey' => $apikey,
+            'pathtoembeddings' => $pathtoembeddings,
+        ];
+
+
+
+        $arguments = escapeshellarg(json_encode($payload));
+
         $cmd = $this->pathtopython . ' ' . $this->pathtoscript . ' ' . $arguments . ' 2>&1';
-        $cmd2 = $this->pathtopython . ' ' . $this->pathtoenvi . ' ' . $apikey . ' 2>&1';
 
         $output = null;
         $exitcode = null;
 
-        /**
-         * @var JSON
-         */
-        $response1 = exec($cmd2); // set key as environment variable
         $response = exec($cmd, $output, $exitcode);
 
         if (!$response) {
@@ -114,5 +124,34 @@ class python extends \block_openai_chat\completion {
         $event->trigger();
 
         return $response;
+    }
+
+    /**
+     * This static function recreates embeddings.
+     * @param array $filepaths
+     * @return void
+     */
+    public static function save_embeddings(array $filepaths) {
+
+        global $CFG;
+
+        $output = null;
+        $exitcode = null;
+
+        $pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
+        $pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/createembeddings.py";
+        $pathtoembeddings = $CFG->dirroot . "/blocks/openai_chat/python/embeddings.csv";
+        $apikey = get_config('block_openai_chat', 'apikey');
+
+        $payload = [
+            'filepaths' => $filepaths,
+            'apikey' => $apikey,
+            'pathtoembeddings' => $pathtoembeddings,
+        ];
+
+        $arguments = escapeshellarg(json_encode($payload));
+
+        $cmd = $pathtopython . ' ' . $pathtoscript . ' ' . $arguments . ' 2>&1';
+        $response = exec($cmd, $output, $exitcode);
     }
 }

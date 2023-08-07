@@ -51,12 +51,17 @@ class completion {
      * @param string block_settings: An object containing the instance-level settings if applicable
      */
     public function __construct($model, $message, $history, $block_settings) {
+
+        global $USER;
         // Set default values
         $this->model = $model;
         $this->apikey = get_config('block_openai_chat', 'apikey');
         $this->prompt = $this->get_setting('prompt', get_string('defaultprompt', 'block_openai_chat'));
         $this->assistantname = $this->get_setting('assistantname', get_string('defaultassistantname', 'block_openai_chat'));
-        $this->username = $this->get_setting('username', get_string('defaultusername', 'block_openai_chat'));
+
+        $this->username = !empty($this->get_setting('username', get_string('defaultusername', 'block_openai_chat'))) ?
+            empty($this->get_setting('username', get_string('defaultusername', 'block_openai_chat')))
+            : $USER->firstname;
 
         $this->temperature = $this->get_setting('temperature', 0.5);
         $this->maxlength = $this->get_setting('maxlength', 500);
@@ -95,13 +100,13 @@ class completion {
 
     /**
      * Make the source of truth ready to add to the prompt by appending some extra information
-     * @param string localsourceoftruth: The instance-level source of truth we got from the API call 
+     * @param string localsourceoftruth: The instance-level source of truth we got from the API call
      */
     private function build_source_of_truth($localsourceoftruth) {
         $sourceoftruth = get_config('block_openai_chat', 'sourceoftruth');
-    
+
         if ($sourceoftruth || $localsourceoftruth) {
-            $sourceoftruth = 
+            $sourceoftruth =
                 get_string('sourceoftruthpreamble', 'block_openai_chat')
                 . $sourceoftruth . "\n\n"
                 . $localsourceoftruth . "\n\n";

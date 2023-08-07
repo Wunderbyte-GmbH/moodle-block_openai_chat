@@ -1,14 +1,22 @@
 import openai
 import csv
-import os
+import json
 
-def create_emb(query):  
+def create_emb(data, apikey, pathtoembeddings):
+
+    jsonobject = json.loads(data)
+
     text_array = []
-    openai.api_key = os.environ.get('apikey')
-    embeddings_filename = "embeddings.csv"
+    openai.api_key = apikey
+    embeddings_filename = pathtoembeddings
 
-    text = query
-    text_array.append(text)
+    # Loop through all .txt files in the /training-data folder
+    for file in jsonobject['filepaths']:
+        # Read the data from each file and push to the array
+        # The dump method is used to convert spacings into newline characters \n
+        with open(file, 'r') as f:
+            text = f.read().replace('\n', '')
+            text_array.append(text)
 
     # This array is used to store the embeddings
     embedding_array = []
@@ -45,4 +53,4 @@ def create_emb(query):
             # separated issues between the values in the CSV
             writer.writerow({'embedding': str(obj['embedding']), 'text': obj['text']})
 
-    print("Embeddings saved to:", embeddings_filename)
+    return "Embeddings saved"

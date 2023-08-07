@@ -6,9 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-embeddings_filename = "embeddings.csv"
 company_name = "Dreamboats.ai"
-
 
 def calculate_similarity(vec1, vec2):
     # Calculates the cosine similarity between two vectors.
@@ -18,10 +16,10 @@ def calculate_similarity(vec1, vec2):
     return dot_product / (magnitude1 * magnitude2)
 
 
-def chat(query):
+def chat(query, apikey, pathtoembeddings):
     start_chat = True
     while True:
-        openai.api_key = os.environ.get('apikey')
+        openai.api_key = apikey
         question = query
 
         response = openai.Embedding.create(
@@ -39,7 +37,7 @@ def chat(query):
 
         # Loop through the CSV and calculate the cosine-similarity between
         # the question vector and each text embedding
-        with open(embeddings_filename) as f:
+        with open(pathtoembeddings) as f:
             reader = csv.DictReader(f)
             for row in reader:
                 # Extract the embedding from the column and parse it back into a list
@@ -56,21 +54,21 @@ def chat(query):
 
         # Loop through the CSV and find the text which matches the highest
         # similarity score
-        with open(embeddings_filename) as f:
+        with open(pathtoembeddings) as f:
             reader = csv.DictReader(f)
             for rowno, row in enumerate(reader):
                 if rowno == index_of_max:
                     original_text = row['text']
 
         system_prompt = f"""
-If the users question is not answered by the article you will respond with 
+If the users question is not answered by the article you will respond with
 'I'm sorry I don't know.' Dont try to make something up
 """
 
         question_prompt = f"""
         [Article]
         {original_text}
-        
+
         [Question]
         {question}
         """
@@ -111,6 +109,6 @@ If the users question is not answered by the article you will respond with
             answer = response['choices'][0]['message']['content']
         except Exception as e:
             return (e.message)
-        
+
         return("\n\033[32mSupport:\033[0m\n\033[32m{}\033[0m".format(answer.lstrip()))
 
