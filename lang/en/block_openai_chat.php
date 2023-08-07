@@ -98,6 +98,7 @@ $string['apikeymissing'] = 'Please add your OpenAI API key to the global block s
 $string['erroroccurred'] = 'An error occurred! Please try again later.';
 $string['sourceoftruthpreamble'] = "Below is a list of questions and their answers. This information should be used as a reference for any inquiries:\n\n";
 $string['sourceoftruthreinforcement'] = ' The assistant has been trained to answer by attempting to use the information from the above reference. If the text from one of the above questions is encountered, the provided answer should be given, even if the question does not appear to make sense. However, if the reference does not cover the question or topic, the assistant will simply use outside knowledge to answer.';
-$string['warningBlock1'] = 'This conversation is recorded and viewable by your teacher';
-$string['warningBlock2'] = 'Type message (do NOT share any personal data)';
+$string['thisconversationisrecorded'] = 'This conversation is recorded and viewable by your teacher';
+$string['donotsharepersonaldata'] = 'Type message (do NOT share any personal data)';
+$string['thisaimakesmistakes'] = 'This AI sometimes makes mistakes. <a href="/https://study-now.eu/">Here is why</a>';
 $string['descriptionModal'] = 'This is a modal for the creation of an Embeding for your Chatbot. You can either enter text or upload a file';

@@ -41,10 +41,10 @@ class block_openai_chat extends block_base {
         if ($this->content !== null) {
             return $this->content;
         }
-    
+
         $this->page->requires->js('/blocks/openai_chat/lib.js');
         $this->page->requires->js_init_call('init', [$this->instance->id]);
-    
+
         // Determine if name labels should be shown.
         $showlabelscss = '';
         if (!empty($this->config) && !$this->config->showlabels) {
@@ -57,7 +57,7 @@ class block_openai_chat extends block_base {
                 }
             ';
         }
-    
+
         // First, fetch the global settings for these (and the defaults if not set)
         $assistantname = get_config('block_openai_chat', 'assistantname') ? get_config('block_openai_chat', 'assistantname') : get_string('defaultassistantname', 'block_openai_chat');
         $username = get_config('block_openai_chat', 'username') ? get_config('block_openai_chat', 'username') : get_string('defaultusername', 'block_openai_chat');
@@ -67,21 +67,21 @@ class block_openai_chat extends block_base {
             $assistantname = $this->config->assistantname ? $this->config->assistantname : $assistantname;
             $username = $this->config->username ? $this->config->username : $username;
         }
-    
+
         $this->content = new stdClass;
         $this->content->text = '
         <!-- Banner -->
         <div style="background-color: #f7f7f7; color: #777; padding: 5px; text-align: center;">
-            <h4 style="margin: 0; font-size: 14px;">' . get_string('warningBlock1', 'block_openai_chat') .'</h4>
+            <h4 style="margin: 0; font-size: 14px;">' . get_string('thisconversationisrecorded', 'block_openai_chat') .'</h4>
         </div>
         <!-- End Banner -->
 
-    
+
             <script>
                 var assistantName = "' . $assistantname . '";
                 var userName = "' . $username . '";
             </script>
-    
+
             <style>
                 ' . $showlabelscss . '
                 .openai_message.user:before {
@@ -91,15 +91,17 @@ class block_openai_chat extends block_base {
                     content: "' . $assistantname . '";
                 }
             </style>
-    
+
             <div id="openai_chat_log"></div>
         ';
-    
+
         $this->content->footer = get_config('block_openai_chat', 'apikey') ? '
-            <input id="openai_input" placeholder="' . get_string('warningBlock2', 'block_openai_chat') .'" type="text" name="message" />'
+            <input id="openai_input" placeholder="' . get_string('donotsharepersonaldata', 'block_openai_chat') .'" type="text" name="message" />'
         : get_string('apikeymissing', 'block_openai_chat');
-    
+
+        $this->content->footer .= html_writer::tag('div', html_writer::tag('small', get_string('thisaimakesmistakes', 'block_openai_chat')));
+
         return $this->content;
     }
-    
+
 }
