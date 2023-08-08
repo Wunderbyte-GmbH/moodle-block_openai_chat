@@ -1,6 +1,7 @@
 import openai
 import csv
 import json
+from PyPDF2 import PdfReader
 
 def create_emb(data, apikey, pathtoembeddings):
 
@@ -11,12 +12,21 @@ def create_emb(data, apikey, pathtoembeddings):
     embeddings_filename = pathtoembeddings
 
     # Loop through all .txt files in the /training-data folder
-    for file in jsonobject['filepaths']:
+    for file in jsonobject['textfilepaths']:
         # Read the data from each file and push to the array
         # The dump method is used to convert spacings into newline characters \n
         with open(file, 'r') as f:
             text = f.read().replace('\n', '')
             text_array.append(text)
+
+     # Loop through all .txt files in the /training-data folder
+    for file in jsonobject['pdffilepaths']:
+        # Read the data from each file and push to the array
+        reader = PdfReader(file)
+        for page in reader.pages:
+            text = page.extract_text()
+            text_array.append(text)
+
 
     # This array is used to store the embeddings
     embedding_array = []

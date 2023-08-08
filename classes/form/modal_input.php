@@ -26,6 +26,7 @@ use context;
 use context_system;
 use core_form\dynamic_form;
 use dml_exception;
+use invalid_dataroot_permissions;
 use moodle_url;
 use stdClass;
 use stored_file;
@@ -96,10 +97,9 @@ class modal_input extends dynamic_form {
             );
         }
 
-        $textfromfiles = $this->get_text_from_saved_files();
-
-        $filepaths = $this->return_array_of_filepaths();
-        python::save_embeddings($filepaths);
+        $textfilepaths = $this->return_array_of_filepaths('text/plain');
+        $pdffilepaths = $this->return_array_of_filepaths('application/pdf');
+        python::save_embeddings($textfilepaths, $pdffilepaths);
 
         return $data;
     }
@@ -209,7 +209,15 @@ class modal_input extends dynamic_form {
     }
 
 
-    public function return_array_of_filepaths() {
+    /**
+     *
+     * @param string $filetype
+     * @return array
+     * @throws dml_exception
+     * @throws coding_exception
+     * @throws invalid_dataroot_permissions
+     */
+    public function return_array_of_filepaths(string $filetype) {
         $context = context_system::instance();
 
         $fs = get_file_storage();
@@ -217,7 +225,10 @@ class modal_input extends dynamic_form {
 
         $returnarray = [];
         foreach ($files as $file) {
-            $returnarray[] = $file->copy_content_to_temp();
+            $mimetype = $file->get_mimetype();
+            if ($mimetype == $filetype) {
+                $returnarray[] = $file->copy_content_to_temp();
+            }
         }
 
         return $returnarray;

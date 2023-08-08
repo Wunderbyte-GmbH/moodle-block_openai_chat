@@ -128,10 +128,11 @@ class python extends \block_openai_chat\completion {
 
     /**
      * This static function recreates embeddings.
-     * @param array $filepaths
+     * @param array $textfilepaths
+     * @param array $pdffilepaths
      * @return void
      */
-    public static function save_embeddings(array $filepaths) {
+    public static function save_embeddings(array $textfilepaths, array $pdffilepaths) {
 
         global $CFG;
 
@@ -144,9 +145,10 @@ class python extends \block_openai_chat\completion {
         $apikey = get_config('block_openai_chat', 'apikey');
 
         $payload = [
-            'filepaths' => $filepaths,
             'apikey' => $apikey,
             'pathtoembeddings' => $pathtoembeddings,
+            'textfilepaths' => $textfilepaths,
+            'pdffilepaths' => $pdffilepaths,
         ];
 
         $arguments = escapeshellarg(json_encode($payload));
