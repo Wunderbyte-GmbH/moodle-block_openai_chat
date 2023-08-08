@@ -38,6 +38,9 @@ class block_openai_chat extends block_base {
     }
 
     public function get_content() {
+
+        global $USER;
+
         if ($this->content !== null) {
             return $this->content;
         }
@@ -60,13 +63,18 @@ class block_openai_chat extends block_base {
 
         // First, fetch the global settings for these (and the defaults if not set)
         $assistantname = get_config('block_openai_chat', 'assistantname') ? get_config('block_openai_chat', 'assistantname') : get_string('defaultassistantname', 'block_openai_chat');
-        $username = get_config('block_openai_chat', 'username') ? get_config('block_openai_chat', 'username') : get_string('defaultusername', 'block_openai_chat');
+        $username = !empty(get_config('block_openai_chat', 'username')) ? get_config('block_openai_chat', 'username') : $USER->firstname;
+        $welcometext = get_config('block_openai_chat', 'welcometext') ?? '';
 
         // Then, override with local settings if available
         if (!empty($this->config)) {
             $assistantname = $this->config->assistantname ? $this->config->assistantname : $assistantname;
             $username = $this->config->username ? $this->config->username : $username;
+            $username = $this->config->welcometext ? $this->config->welcometext : $welcometext;
         }
+
+        // We replace firstname tag with firstname.
+        $welcometext = str_replace("{firstname}", $USER->firstname, $welcometext);
 
         $this->content = new stdClass;
         $this->content->text = '
@@ -92,7 +100,9 @@ class block_openai_chat extends block_base {
                 }
             </style>
 
-            <div id="openai_chat_log"></div>
+            <div id="openai_chat_log">
+                <div class="openai_message bot">"' . $welcometext . '"</div>
+            </div>
         ';
 
         $this->content->footer = get_config('block_openai_chat', 'apikey') ? '

@@ -76,10 +76,18 @@ $settings->add(new admin_setting_configtextarea(
     PARAM_TEXT
 ));
 
+$settings->add(new admin_setting_configtextarea(
+    'block_openai_chat/welcometext',
+    get_string('welcometext', 'block_openai_chat'),
+    get_string('welcometextdesc', 'block_openai_chat'),
+    '',
+    PARAM_TEXT
+));
+
 // Advanced Settings //
 
 $settings->add(new admin_setting_heading(
-    'block_openai_chat/advanced', 
+    'block_openai_chat/advanced',
     get_string('advanced', 'block_openai_chat'),
     get_string('advanceddesc', 'block_openai_chat')
 ));

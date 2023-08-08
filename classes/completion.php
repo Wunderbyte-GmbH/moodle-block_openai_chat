@@ -59,9 +59,7 @@ class completion {
         $this->prompt = $this->get_setting('prompt', get_string('defaultprompt', 'block_openai_chat'));
         $this->assistantname = $this->get_setting('assistantname', get_string('defaultassistantname', 'block_openai_chat'));
 
-        $this->username = !empty($this->get_setting('username', get_string('defaultusername', 'block_openai_chat'))) ?
-            empty($this->get_setting('username', get_string('defaultusername', 'block_openai_chat')))
-            : $USER->firstname;
+        $this->username = empty($this->get_setting('username', null)) ? $USER->firstname : $this->get_setting('username', null);
 
         $this->temperature = $this->get_setting('temperature', 0.5);
         $this->maxlength = $this->get_setting('maxlength', 500);

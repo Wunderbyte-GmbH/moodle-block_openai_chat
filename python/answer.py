@@ -105,5 +105,5 @@ def chat(query, apikey, pathtoembeddings, system_prompt):
         except Exception as e:
             return (e.message)
 
-        return("\n\033[32mSupport:\033[0m\n\033[32m{}\033[0m".format(answer.lstrip()))
+        return answer
 

@@ -15,10 +15,9 @@ jsonobject = json.loads(data)
 
 message = jsonobject["sourceoftruth"] + jsonobject["prompt"] + jsonobject["historystring"] + jsonobject["message"] +" \n" + jsonobject["assistentname"]
 
-x = chat(message, jsonobject["apikey"], jsonobject["pathtoembeddings"], jsonobject["sourceoftruth"])
+answer = chat(message, jsonobject["apikey"], jsonobject["pathtoembeddings"], jsonobject["sourceoftruth"])
 
 id = "JUST_A_TEST_ID"
-text = x
 prompt_tokens = 123
 completion_tokens = 234
 total_tokens = 357
@@ -29,7 +28,7 @@ response = {
   "model": "custom",
   "choices": [
     {
-      "text": text,
+      "text": answer,
       "index": 0,
       "logprobs": None,
       "finish_reason": "stop"
