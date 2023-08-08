@@ -16,7 +16,7 @@ def calculate_similarity(vec1, vec2):
     return dot_product / (magnitude1 * magnitude2)
 
 
-def chat(query, apikey, pathtoembeddings):
+def chat(query, apikey, pathtoembeddings, system_prompt):
     start_chat = True
     while True:
         openai.api_key = apikey
@@ -59,11 +59,6 @@ def chat(query, apikey, pathtoembeddings):
             for rowno, row in enumerate(reader):
                 if rowno == index_of_max:
                     original_text = row['text']
-
-        system_prompt = f"""
-If the users question is not answered by the article you will respond with
-'I'm sorry I don't know.' Dont try to make something up
-"""
 
         question_prompt = f"""
         [Article]

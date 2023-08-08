@@ -15,7 +15,7 @@ jsonobject = json.loads(data)
 
 message = jsonobject["sourceoftruth"] + jsonobject["prompt"] + jsonobject["historystring"] + jsonobject["message"] +" \n" + jsonobject["assistentname"]
 
-x = chat(message, jsonobject["apikey"], jsonobject["pathtoembeddings"])
+x = chat(message, jsonobject["apikey"], jsonobject["pathtoembeddings"], jsonobject["sourceoftruth"])
 
 id = "JUST_A_TEST_ID"
 text = x
