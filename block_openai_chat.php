@@ -101,7 +101,7 @@ class block_openai_chat extends block_base {
             </style>
 
             <div id="openai_chat_log">
-                <div class="openai_message bot">"' . $welcometext . '"</div>
+                <div class="openai_message bot">' . $welcometext . '</div>
             </div>
         ';
 
