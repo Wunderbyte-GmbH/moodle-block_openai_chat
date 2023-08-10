@@ -8,6 +8,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The id of the user who asked the question"/>
+        <FIELD NAME="blockid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="instance id of the block"/>
         <FIELD NAME="userrequest" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The exact request of the user"/>
         <FIELD NAME="request" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The request send to the ai"/>
         <FIELD NAME="answer" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The answer of the ai"/>

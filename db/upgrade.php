@@ -87,6 +87,22 @@ function xmldb_block_openai_chat_upgrade($oldversion)
         upgrade_block_savepoint(true, 2023072000, 'openai_chat');
     }
 
+    if ($oldversion < 2023081000) {
+
+        // Define field blockid to be added to block_openai_chat_protocol.
+        $table = new xmldb_table('block_openai_chat_protocol');
+        $field = new xmldb_field('blockid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'userid');
+
+        // Conditionally launch add field blockid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Openai_chat savepoint reached.
+        upgrade_block_savepoint(true, 2023081000, 'openai_chat');
+    }
+
+
 
     return true;
 }
