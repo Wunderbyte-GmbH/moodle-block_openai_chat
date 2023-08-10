@@ -40,6 +40,8 @@ $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url('/blocks/openai_chat/admin.php');
 
+$blockid = optional_param('blockid', 0, PARAM_INT);
+
 echo $OUTPUT->header();
 
 
