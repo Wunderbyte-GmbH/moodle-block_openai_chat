@@ -23,13 +23,12 @@ global $CFG;
 use block_openai_chat\completion\python;
 use coding_exception;
 use context;
-use context_system;
+use context_block;
 use core_form\dynamic_form;
 use dml_exception;
 use invalid_dataroot_permissions;
 use moodle_url;
 use stdClass;
-use stored_file;
 
 /**
  * Modal form (dynamic form) for cashier manual rebooking.
@@ -39,7 +38,7 @@ use stored_file;
  * @author      2023 Bernhard Aichinger-Ganas & Danilo Stoilovski, wunderbyte.at <info@wunderbyte.at>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class modal_input extends dynamic_form {
+class modal_add_files extends dynamic_form {
 
     /**
      * {@inheritdoc}
@@ -48,6 +47,10 @@ class modal_input extends dynamic_form {
     public function definition() {
 
         $mform = $this->_form;
+
+        $blockid = $this->_ajaxformdata['blockid'];
+
+        $mform->addElement('hidden', 'blockid', $blockid);
 
         $options = array('subdirs' => 1, 'maxfiles' => -1, 'accepted_types'=>'*');
         $mform->addElement('filemanager', 'attachments', '', null, $options);
@@ -59,7 +62,7 @@ class modal_input extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-        require_capability('moodle/site:config', $this->get_context_for_dynamic_submission());
+        require_capability('block/openai_chat:viewprotocoll', $this->get_context_for_dynamic_submission());
     }
 
     /**
@@ -74,9 +77,11 @@ class modal_input extends dynamic_form {
     public function process_dynamic_submission() {
         global $USER,$CFG;
 
+        $blockid = $this->_ajaxformdata['blockid'];
+
         if ($data = $this->get_data()) {
             // ... store or update $entry.
-            $context = context_system::instance();
+            $context = $this->get_context_for_dynamic_submission();
             // Now save the files in correct part of the File API.
             file_save_draft_area_files(
                 // The $data->attachments property contains the itemid of the draft file area.
@@ -87,8 +92,7 @@ class modal_input extends dynamic_form {
                 $context->id,
                 'block_openai_chat',
                 'attachments',
-                1, // Could be dynamicly set to store diffrent files in diffrent blocks
-
+                1,
                 [
                     'subdirs' => 1,
                     'maxbytes' => 200000,
@@ -97,9 +101,9 @@ class modal_input extends dynamic_form {
             );
         }
 
-        $textfilepaths = $this->return_array_of_filepaths('text/plain');
-        $pdffilepaths = $this->return_array_of_filepaths('application/pdf');
-        python::save_embeddings($textfilepaths, $pdffilepaths);
+        $textfilepaths = $this->return_array_of_filepaths('text/plain', $blockid);
+        $pdffilepaths = $this->return_array_of_filepaths('application/pdf', $blockid);
+        python::save_embeddings($blockid, $textfilepaths, $pdffilepaths);
 
         return $data;
     }
@@ -118,7 +122,7 @@ class modal_input extends dynamic_form {
         global $DB;
 
         $data = new stdClass();
-        $context = context_system::instance();
+        $context = $this->get_context_for_dynamic_submission();
 
         // Get an unused draft itemid which will be used for this form.
         $draftitemid = file_get_submitted_draft_itemid('attachments');
@@ -158,7 +162,9 @@ class modal_input extends dynamic_form {
      */
     protected function get_context_for_dynamic_submission(): context {
 
-        return context_system::instance();
+        $blockid = $this->_ajaxformdata['blockid'];
+
+        return context_block::instance($blockid);
     }
 
     /**
@@ -194,7 +200,7 @@ class modal_input extends dynamic_form {
      * @throws coding_exception
      */
     public function get_text_from_saved_files() {
-        $context = context_system::instance();
+        $context = $this->get_context_for_dynamic_submission();
 
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'block_openai_chat', 'attachments');
@@ -210,7 +216,6 @@ class modal_input extends dynamic_form {
 
 
     /**
-     *
      * @param string $filetype
      * @return array
      * @throws dml_exception
@@ -218,7 +223,7 @@ class modal_input extends dynamic_form {
      * @throws invalid_dataroot_permissions
      */
     public function return_array_of_filepaths(string $filetype) {
-        $context = context_system::instance();
+        $context = $this->get_context_for_dynamic_submission();
 
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'block_openai_chat', 'attachments');

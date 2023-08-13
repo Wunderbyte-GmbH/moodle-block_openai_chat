@@ -40,8 +40,9 @@ defined('MOODLE_INTERNAL') || die();
                 'userrequest' =>  $eventdata["other"]["userrequest"],
                 'request' =>  $eventdata["other"]["curlbody"]["prompt"],
                 'answer' =>  $eventdata["other"]["response"],
+                'blockid' =>  $eventdata["other"]["blockid"],
             ];
-            
+
             block_openai_chat_protocol::save_entry($data);
         }
     }

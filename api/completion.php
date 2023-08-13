@@ -51,16 +51,16 @@ $instance = block_instance('openai_chat', $instance_record);
 
 $block_settings = [];
 $setting_names = [
-    'sourceoftruth', 
-    'prompt', 
-    'username', 
-    'assistantname', 
-    'apikey', 
-    'model', 
-    'temperature', 
-    'maxlength', 
-    'topp', 
-    'frequency', 
+    'sourceoftruth',
+    'prompt',
+    'username',
+    'assistantname',
+    'apikey',
+    'model',
+    'temperature',
+    'maxlength',
+    'topp',
+    'frequency',
     'presence'
 ];
 foreach ($setting_names as $setting) {
@@ -70,6 +70,9 @@ foreach ($setting_names as $setting) {
         $block_settings[$setting] = "";
     }
 }
+
+// For embeddings, we need the blockid.
+$block_settings['blockid'] = $block_id;
 
 $modles = rest_interface::get_models_file() ?? [0 => 'enter api key'];
 $engines = $modles;

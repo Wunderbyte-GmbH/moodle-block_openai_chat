@@ -58,19 +58,19 @@ class admin_table extends wunderbyte_table {
     public function col_answer($values) {
 
         $jsonobject = json_decode($values->answer);
-        $text = $jsonobject->choices[0]->text ?? 'No valid response';
+        $text = $jsonobject->choices[0]->text ?? $jsonobject->choices[0]->message->content ?? 'No valid response';
 
         return '
-        <a type="button" data-toggle="modal" data-target="#staticBackdrop">
+        <a type="button" data-toggle="modal" data-target="#anserModal' . $values->id . '">
         ' . $text . '
         </a>
 
         <!-- Modal -->
-        <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" id="anserModal' . $values->id . '" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="anserModal' . $values->id . 'Label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                <h5 class="modal-title" id="anserModal' . $values->id . 'Label">Modal title</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>

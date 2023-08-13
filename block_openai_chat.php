@@ -39,7 +39,7 @@ class block_openai_chat extends block_base {
 
     public function get_content() {
 
-        global $USER;
+        global $USER, $OUTPUT;
 
         if ($this->content !== null) {
             return $this->content;
@@ -63,18 +63,21 @@ class block_openai_chat extends block_base {
 
         // First, fetch the global settings for these (and the defaults if not set)
         $assistantname = get_config('block_openai_chat', 'assistantname') ? get_config('block_openai_chat', 'assistantname') : get_string('defaultassistantname', 'block_openai_chat');
-        $username = !empty(get_config('block_openai_chat', 'username')) ? get_config('block_openai_chat', 'username') : $USER->firstname;
+        $username = !empty(get_config('block_openai_chat', 'username')) ? get_config('block_openai_chat', 'username') : $USER->firstname ?? '';
         $welcometext = get_config('block_openai_chat', 'welcometext') ?? '';
 
         // Then, override with local settings if available
         if (!empty($this->config)) {
             $assistantname = $this->config->assistantname ? $this->config->assistantname : $assistantname;
             $username = $this->config->username ? $this->config->username : $username;
-            $username = $this->config->welcometext ? $this->config->welcometext : $welcometext;
+            $welcometext = $this->config->welcometext ?? $welcometext;
         }
 
         // We replace firstname tag with firstname.
-        $welcometext = str_replace("{firstname}", $USER->firstname, $welcometext);
+        if (!empty($welcometext)) {
+            $welcometext = str_replace("{firstname}", $USER->firstname ?? '', $welcometext);
+            $welcometext = '<div class="openai_message bot">' . $welcometext . '</div>';
+        }
 
         $this->content = new stdClass;
         $this->content->text = '
@@ -99,9 +102,8 @@ class block_openai_chat extends block_base {
                     content: "' . $assistantname . '";
                 }
             </style>
-
             <div id="openai_chat_log">
-                <div class="openai_message bot">"' . $welcometext . '"</div>
+
             </div>
         ';
 
@@ -111,7 +113,16 @@ class block_openai_chat extends block_base {
 
         $this->content->footer .= html_writer::tag('div', html_writer::tag('small', get_string('thisaimakesmistakes', 'block_openai_chat')));
 
+        $blockcontext = context_block::instance($this->instance->id);
+        if (has_capability('block/openai_chat:viewprotocoll', $blockcontext)) {
+
+            $url = new moodle_url('/blocks/openai_chat/admin.php', ['blockid' => $this->instance->id]);
+
+            $this->content->footer .= $OUTPUT->render_from_template('block_openai_chat/addknowledgebutton', ['adminurl' => $url->out()]);
+        }
+
         return $this->content;
+
     }
 
 }

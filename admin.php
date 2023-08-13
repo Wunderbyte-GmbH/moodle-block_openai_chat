@@ -29,24 +29,27 @@ require_login();
 
 global $DB, $PAGE;
 
-$syscontext = context_system::instance();
-
-// Make sure only an admin can see this.
-if (!has_capability('block/openai_chat:viewprotocoll', $syscontext)) {
-    die;
-}
+$blockid = optional_param('blockid', 0, PARAM_INT);
 
 $context = context_system::instance();
-$PAGE->set_context($context);
-$PAGE->set_url('/blocks/openai_chat/admin.php');
+if (!has_capability('moodle/site:config', $context)) {
+    $blockcontext = context_block::instance($blockid);
+    // Make sure only an admin can see this.
+    if (!has_capability('block/openai_chat:viewprotocoll', $blockcontext)) {
+        die;
+    }
+}
 
-$blockid = optional_param('blockid', 0, PARAM_INT);
+$PAGE->set_context($context);
+
+$url = "/blocks/openai_chat/admin.php";
+$url .= !empty($blockid) ? "?blockid=' . $blockid" : "";
+
+$PAGE->set_url($url);
 
 echo $OUTPUT->header();
 
-
-$buttonHtml = html_writer::tag('A', 'Train model', ['class' => "btn btn-primary btn-openmodaladfinetuning"]);
-echo $buttonHtml;
+echo $OUTPUT->render_from_template('block_openai_chat/trainamodelbutton', ['blockid' => $blockid]);
 
 $columns = [
     'id' => get_string('id', 'block_openai_chat'),
@@ -60,7 +63,7 @@ $columns = [
     'model' => get_string('model', 'block_openai_chat'),
 
 ];
-$table = new admin_table('openai_chatprotocol');
+$table = new admin_table("blockid_$blockid" . "openai_chatprotocol");
 
 $table->define_headers(array_values($columns));
 $table->define_columns(array_keys($columns));
@@ -78,10 +81,20 @@ $table->define_filtercolumns([
 $sqlinsert = $DB->sql_concat('u.firstname', "' '", 'u.lastname');
 $sqlinsert2 = $DB->sql_concat('um.firstname', "' '", 'um.lastname');
 
+// We only ask for the current block id
+
+if (!empty($blockid)) {
+    $limittoblock = " WHERE ocp.blockid = $blockid ";
+} else {
+    $limittoblock = "";
+}
+
 $from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodified, um.firstname umfirstname, um.lastname umlastname
             FROM {block_openai_chat_protocol} ocp
         LEFT JOIN {user} u ON ocp.userid=u.id
-        LEFT JOIN {user} um ON ocp.usermodified=um.id) as s1";
+        LEFT JOIN {user} um ON ocp.usermodified=um.id
+        $limittoblock
+        ) as s1";
 
 $table->set_filter_sql("*", $from, '1=1', '');
 $table->define_cache('block_openai_chat', 'admintable');

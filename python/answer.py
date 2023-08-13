@@ -16,11 +16,25 @@ def calculate_similarity(vec1, vec2):
     return dot_product / (magnitude1 * magnitude2)
 
 
-def chat(query, apikey, pathtoembeddings, system_prompt):
+def chat(jsonobject):
+
+    pathtoembeddings = jsonobject["pathtoembeddings"]
+    apikey = jsonobject["apikey"]
+    query = jsonobject["message"]
+    prompt = jsonobject["prompt"]
+    historystring = jsonobject["historystring"]
+    assistentname = jsonobject["assistentname"]
+    sourceoftruthenforcement = jsonobject['sourceoftruthenforcement']
+    sourceoftruth = jsonobject['sourceoftruth']
+    temperature = jsonobject['temperature']
+    maxtokens = jsonobject['maxtokens']
+
+    messages = jsonobject['messages']
+
     start_chat = True
     while True:
         openai.api_key = apikey
-        question = query
+        question = f"""{query} {historystring} """
 
         response = openai.Embedding.create(
             model="text-embedding-ada-002",
@@ -47,63 +61,92 @@ def chat(query, apikey, pathtoembeddings, system_prompt):
                 similarity_array.append(calculate_similarity(question_embedding, text_embedding))
 
         # Return the index of the highest similarity score
-        index_of_max = similarity_array.index(max(similarity_array))
+        index_of_max1 = similarity_array.index(max(similarity_array))
+        del similarity_array[index_of_max1]
+        index_of_max2 = similarity_array.index(max(similarity_array))
 
         # Used to store the original text
         original_text = ""
-
+        alltext = ""
         # Loop through the CSV and find the text which matches the highest
         # similarity score
         with open(pathtoembeddings) as f:
             reader = csv.DictReader(f)
             for rowno, row in enumerate(reader):
-                if rowno == index_of_max:
+                #alltext += row['text']
+                if rowno == index_of_max1:
+                    original_text += row['text']
+                if rowno == index_of_max2:
                     original_text = row['text']
 
-        question_prompt = f"""
-        [Article]
+        system_prompt = f"""
+        {sourceoftruthenforcement}
+        {sourceoftruth}
         {original_text}
-
-        [Question]
-        {question}
         """
+
+        # We always transmit the whole history.
+        # Here we append the latest query of the user.
+        messages.append(
+            {
+                 "role": "user",
+                 "content": query
+            }
+        )
+
+        # We always prepend the system message
+
+        messages.insert(0, {
+                "role": "system",
+                "content": system_prompt
+            }
+        )
+
+        # return messages
+
         try:
             response = openai.ChatCompletion.create(
                 model="gpt-4",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": question_prompt
-                    }
-                ],
-                temperature=0.2,
-                max_tokens=2000,
+                messages= messages,
+                temperature= temperature,
+                max_tokens= maxtokens,
             )
         except Exception as e:
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo-16k",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": question_prompt
-                    }
-                ],
-                temperature=0.2,
-                max_tokens=2000,
+                messages= messages,
+                temperature= temperature,
+                max_tokens= maxtokens,
             )
 
         try:
             answer = response['choices'][0]['message']['content']
         except Exception as e:
-            return (e.message)
+            response = {
+                "id": 'error',
+                "object": "text_completion",
+                "created": 1690278796,
+                "model": "custom",
+                "choices": [
+                    {
+                    "text": e.message,
+                    "index": 0,
+                    "logprobs": None,
+                    "finish_reason": "stop"
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 1,
+                    "completion_tokens": 1,
+                    "total_tokens": 1
+                }
+            }
 
-        return answer
-
+        response['inputmessages'] = messages
+        # response['similarity_array'] = json.dumps(similarity_array)
+        # response['text_embedding'] = json.dumps(text_embedding)
+        response['index_of_max1'] = index_of_max1
+        response['index_of_max2'] = index_of_max2
+        response['historystring'] = historystring
+        #response['alltext'] = alltext
+        return response

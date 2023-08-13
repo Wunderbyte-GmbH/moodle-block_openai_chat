@@ -25,6 +25,7 @@
 namespace block_openai_chat\completion;
 
 use block_openai_chat\event\answer_received;
+use context_block;
 use context_system;
 use moodle_exception;
 
@@ -40,6 +41,7 @@ class python extends \block_openai_chat\completion {
 
         $this->pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
         $this->pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/custom.py"; // TODO read at runtime
+        // We need the blockid here because it gives us the path to the embeddings.
 
         parent::__construct($model, $message, $history, $block_settings);
     }
@@ -49,13 +51,14 @@ class python extends \block_openai_chat\completion {
      * @return JSON: The API response from OpenAI
      */
     public function create_completion() {
-        if ($this->sourceoftruth) {
-            $this->prompt .= get_string('sourceoftruthreinforcement', 'block_openai_chat');
-        }
-        $this->prompt .= "\n\n";
+
         $history_string = $this->format_history();
         $history_string .= $this->username . ": ";
-        return $this->exec_script($history_string);
+
+        // we execute the script depending on the settings:
+        $blockid = empty(get_config('block_openai_chat', 'allowinstancesettings')) ? 0 :  $this->blockid;
+
+        return $this->exec_script($history_string, $blockid);
     }
 
     /**
@@ -71,18 +74,38 @@ class python extends \block_openai_chat\completion {
     }
 
     /**
+     * Format the history JSON into a string that we can pass in the prompt
+     * @return string: The string representing the chat history to add to the prompt
+     */
+    private function format_history_as_messages() {
+
+        $messages = [];
+        $user = true;
+        foreach ($this->history as $entry) {
+            $messages[] = [
+                "role" => $user ? "user" : "assistant",
+                "content" => $entry['message'],
+            ];
+            $user = !$user;
+        }
+
+        return $messages;
+    }
+
+    /**
      * Make the actual API call to OpenAI
      * @return JSON: The response from OpenAI
      */
-    private function exec_script($history_string) {
+    private function exec_script($history_string, $blockid) {
 
         global $USER, $CFG;
 
         $apikey = get_config('block_openai_chat', 'apikey');
-        $pathtoembeddings = $CFG->dirroot . "/blocks/openai_chat/python/embeddings.csv";
+        $pathtoembeddings = $CFG->dirroot . "/blocks/openai_chat/data/block" . $blockid .  "_embeddings.csv";
 
         $payload = [
             'sourceoftruth' => $this->sourceoftruth,
+            'sourceoftruthenforcement' => get_string('sourceoftruthreinforcement', 'block_openai_chat'),
             'prompt' => $this->prompt,
             'historystring' => $history_string,
             'message' => $this->message,
@@ -90,8 +113,10 @@ class python extends \block_openai_chat\completion {
             'username' => $this->username,
             'apikey' => $apikey,
             'pathtoembeddings' => $pathtoembeddings,
+            'temperature' => 0.2,
+            'maxtokens' => 2000,
+            'messages' => $this->format_history_as_messages(),
         ];
-
 
 
         $arguments = escapeshellarg(json_encode($payload));
@@ -114,8 +139,9 @@ class python extends \block_openai_chat\completion {
         ];
 
         $event = answer_received::create(array(
-            'context' => context_system::instance(),
+            'context' => context_block::instance($this->blockid),
             'other' => [
+                'blockid' => $blockid,
                 'curlbody' => $curlbody,
                 'response' => $response,
                 'userrequest' => $this->message,
@@ -128,11 +154,12 @@ class python extends \block_openai_chat\completion {
 
     /**
      * This static function recreates embeddings.
+     * @param int $blockid
      * @param array $textfilepaths
      * @param array $pdffilepaths
      * @return void
      */
-    public static function save_embeddings(array $textfilepaths, array $pdffilepaths) {
+    public static function save_embeddings(int $blockid, array $textfilepaths, array $pdffilepaths) {
 
         global $CFG;
 
@@ -141,7 +168,7 @@ class python extends \block_openai_chat\completion {
 
         $pathtopython = empty($CFG->pathtopython) ? "/usr/bin/python3" : $CFG->pathtopython;
         $pathtoscript = $CFG->dirroot . "/blocks/openai_chat/python/createembeddings.py";
-        $pathtoembeddings = $CFG->dirroot . "/blocks/openai_chat/python/embeddings.csv";
+        $pathtoembeddings = $CFG->dirroot . "/blocks/openai_chat/data/block" . $blockid .  "_embeddings.csv";
         $apikey = get_config('block_openai_chat', 'apikey');
 
         $payload = [

@@ -104,3 +104,5 @@ $string['thisconversationisrecorded'] = 'This conversation is recorded and viewa
 $string['donotsharepersonaldata'] = 'Type message (do NOT share any personal data)';
 $string['thisaimakesmistakes'] = 'This AI sometimes makes mistakes. <a href="https://study-now.eu/">Here is why</a>';
 $string['descriptionModal'] = 'This is a modal for the creation of an Embeding for your Chatbot. You can either enter text or upload a file';
+
+$string['addknowledge'] = 'Add knowledge';

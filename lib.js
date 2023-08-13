@@ -10,7 +10,7 @@ const init = (Y, blockID) => {
         }
     })
 
-    require(['core/str'], function(str) {
+    require(['core/str'], function (str) {
         var strings = [
             {
                 key: 'askaquestion',
@@ -63,28 +63,28 @@ const createCompletion = (message, blockID) => {
             blockID: blockID
         })
     })
-    .then(response => {
-        let messageContainer = document.querySelector('#openai_chat_log')
-        messageContainer.removeChild(messageContainer.lastElementChild)
-        document.querySelector('#openai_input').classList.remove('disabled')
+        .then(response => {
+            let messageContainer = document.querySelector('#openai_chat_log')
+            messageContainer.removeChild(messageContainer.lastElementChild)
+            document.querySelector('#openai_input').classList.remove('disabled')
 
-        if (!response.ok) {
-            throw Error(response.statusText)
-        } else {
-            return response.json()
-        }
-    })
-    .then(data => {
-        try {
-            data.choices[0].text ? addToChatLog('bot', data.choices[0].text) : addToChatLog('bot', data.choices[0].message.content);
-        } catch (error) {
-            addToChatLog('bot', data.error.message)
-        }
-    })
-    .catch(error => {
-        document.querySelector('#openai_input').classList.add('error')
-        document.querySelector('#openai_input').placeholder = errorString
-    })
+            if (!response.ok) {
+                throw Error(response.statusText)
+            } else {
+                return response.json()
+            }
+        })
+        .then(data => {
+            try {
+                data.choices[0].text ? addToChatLog('bot', data.choices[0].text) : addToChatLog('bot', data.choices[0].message.content);
+            } catch (error) {
+                addToChatLog('bot', data.error.message)
+            }
+        })
+        .catch(error => {
+            document.querySelector('#openai_input').classList.add('error')
+            document.querySelector('#openai_input').placeholder = errorString
+        })
 
 }
 
@@ -103,7 +103,7 @@ const buildTranscript = () => {
         if (message.classList.contains('bot')) {
             user = assistantName
         }
-        transcript.push({"user": user, "message": message.innerText})
+        transcript.push({ "user": user, "message": message.innerText })
     })
 
     return transcript

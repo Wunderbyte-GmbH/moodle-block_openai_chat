@@ -25,6 +25,7 @@
 namespace block_openai_chat\completion;
 
 use block_openai_chat\event\answer_received;
+use context_block;
 use context_system;
 
 defined('MOODLE_INTERNAL') || die;
@@ -94,8 +95,9 @@ class chat extends \block_openai_chat\completion {
         $response = $curl->post("https://api.openai.com/v1/chat/completions", json_encode($curlbody));
 
         $event = answer_received::create(array(
-            'context' => context_system::instance(),
+            'context' => context_block::instance($this->blockid),
             'other' => [
+                'blockid' => $this->blockid,
                 'curlbody' => $curlbody,
                 'response' => $response,
                 'userrequest' => $this->message,

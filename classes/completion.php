@@ -43,6 +43,8 @@ class completion {
     protected $frequency;
     protected $presence;
 
+    protected $blockid;
+
     /**
      * Initialize all the class properties that we'll need regardless of model
      * @param string model: The name of the model we're using

@@ -21,6 +21,9 @@
 
 import ModalForm from 'core_form/modalform';
 
+const SELECTORS = {
+  ADDFILESMODALBUTTON: "#page-blocks-openai_chat-admin a.btn-openmodaladfinetuning"
+};
 /**
  * Init function.
  */
@@ -28,31 +31,34 @@ export function init() {
   // eslint-disable-next-line no-console
   console.log("init");
 
-  const btn = document.querySelector("#page-blocks-openai_chat-admin a.btn-openmodaladfinetuning");
+  const modalbtn = document.querySelector(SELECTORS.ADDFILESMODALBUTTON);
 
-  // eslint-disable-next-line no-console
-  console.log(btn);
-  btn.addEventListener('click', e => {
-
-    // eslint-disable-next-line no-console
-    console.log(e);
-
-    confirmCancelAllUsersAndSetCreditModal(e);
-  });
+  if (modalbtn) {
+    modalbtn.addEventListener('click', e => {
+      addFilesModal(e);
+    });
+  }
 }
 
 /**
  *
  * @param {event} e
  */
-function confirmCancelAllUsersAndSetCreditModal(e) {
+function addFilesModal(e) {
+
+  const blockid = e.target.dataset.blockid;
+
+  // eslint-disable-next-line no-console
+  console.log(blockid);
 
   const modalForm = new ModalForm({
 
     // Name of the class where form is defined (must extend \core_form\dynamic_form):
-    formClass: "block_openai_chat\\form\\modal_input",
+    formClass: "block_openai_chat\\form\\modal_add_files",
     // Add as many arguments as you need, they will be passed to the form:
-    args: {},
+    args: {
+      "blockid": blockid
+    },
     // Pass any configuration settings to the modal dialogue, for example, the title:
     modalConfig: {title: 'myform'},
     // DOM element that should get the focus after the modal dialogue is closed:
@@ -65,9 +71,6 @@ function confirmCancelAllUsersAndSetCreditModal(e) {
 
     // Reload window after cancelling.
     window.location.reload();
-
-    // eslint-disable-next-line no-console
-    console.log('confirmCancelAllUsersAndSetCreditModal: form submitted');
   });
 
   // Show the form.
