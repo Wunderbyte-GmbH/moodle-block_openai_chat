@@ -77,7 +77,7 @@ def chat(jsonobject):
                 if rowno == index_of_max1:
                     original_text += row['text']
                 if rowno == index_of_max2:
-                    original_text = row['text']
+                    original_text += " " + row['text']
 
         system_prompt = f"""
         {sourceoftruthenforcement}
