@@ -75,7 +75,7 @@ class modal_add_files extends dynamic_form {
      * @return mixed
      */
     public function process_dynamic_submission() {
-        global $USER,$CFG;
+        global $USER, $CFG;
 
         $blockid = $this->_ajaxformdata['blockid'];
 
@@ -95,7 +95,7 @@ class modal_add_files extends dynamic_form {
                 1,
                 [
                     'subdirs' => 1,
-                    'maxbytes' => 200000,
+                    'maxbytes' => $CFG->userquota,
                     'maxfiles' => -1,
                 ]
             );
@@ -119,7 +119,7 @@ class modal_add_files extends dynamic_form {
      *     $this->set_data(get_entity($this->_ajaxformdata['cmid']));
      */
     public function set_data_for_dynamic_submission(): void {
-        global $DB;
+        global $DB, $CFG;
 
         $data = new stdClass();
         $context = $this->get_context_for_dynamic_submission();
@@ -142,7 +142,7 @@ class modal_add_files extends dynamic_form {
             1,
             [
                 'subdirs' => 1,
-                'maxbytes' => 20000,
+                'maxbytes' => $CFG->userquota,
                 'maxfiles' => -1,
             ]
         );
