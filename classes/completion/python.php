@@ -122,11 +122,12 @@ class python extends \block_openai_chat\completion {
         $arguments = escapeshellarg(json_encode($payload));
 
         $cmd = $this->pathtopython . ' ' . $this->pathtoscript . ' ' . $arguments . ' 2>&1';
-
+        file_put_contents($CFG->dirroot .'/blocks/openai_chat/python/aa.txt', $cmd. "\n", FILE_APPEND);
         $output = null;
         $exitcode = null;
 
         $response = exec($cmd, $output, $exitcode);
+        file_put_contents($CFG->dirroot .'/blocks/openai_chat/python/aa.txt', $response. "\n", FILE_APPEND);
 
         if (!$response) {
             throw new \moodle_exception('Could not execute script');
@@ -181,6 +182,8 @@ class python extends \block_openai_chat\completion {
         $arguments = escapeshellarg(json_encode($payload));
 
         $cmd = $pathtopython . ' ' . $pathtoscript . ' ' . $arguments . ' 2>&1';
+        file_put_contents($CFG->dirroot .'/blocks/openai_chat/python/aa.txt', $cmd. "\n", FILE_APPEND);
         $response = exec($cmd, $output, $exitcode);
+        file_put_contents($CFG->dirroot .'/blocks/openai_chat/python/aa.txt', $cmd. "\n", FILE_APPEND);
     }
 }

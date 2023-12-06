@@ -17,5 +17,7 @@ jsonobject = json.loads(data)
 response = chat(jsonobject)
 
 #print(x)
-print(json.dumps(response))
+response_dict = response.choices[0].message.content
+print(json.dumps(response_dict))
+#print(json.dumps(response))
 exit(0)

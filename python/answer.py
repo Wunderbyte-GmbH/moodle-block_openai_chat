@@ -1,5 +1,7 @@
 import json
-import openai
+from openai import OpenAI
+
+#client = OpenAI(api_key=apikey)
 import csv
 import os
 from dotenv import load_dotenv
@@ -30,21 +32,22 @@ def chat(jsonobject):
     maxtokens = jsonobject['maxtokens']
 
     messages = jsonobject['messages']
-
+    client = OpenAI(api_key=apikey)
     start_chat = True
     while True:
-        openai.api_key = apikey
         question = f"""{query} {historystring} """
 
-        response = openai.Embedding.create(
-            model="text-embedding-ada-002",
-            input=[question]
-        )
+        response = client.embeddings.create(model="text-embedding-ada-002",
+        input=[question])
+        data_dict = json.loads(response.json())
+        #return data_dict['data'][0]['embedding']
+        response=json.loads(response.json())
 
         try:
-            question_embedding = response['data'][0]["embedding"]
+            question_embedding = response['data'][0]['embedding']
         except Exception as e:
-            return (e.message)
+           # return (e.message)
+           return (e.args)
 
         # Store the similarity scores as the code loops through the CSV
         similarity_array = []
@@ -105,22 +108,20 @@ def chat(jsonobject):
         # return messages
 
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages= messages,
-                temperature= temperature,
-                max_tokens= maxtokens,
-            )
+            response = client.chat.completions.create(model="gpt-4",
+            messages= messages,
+            temperature= temperature,
+            max_tokens= maxtokens)
         except Exception as e:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo-16k",
-                messages= messages,
-                temperature= temperature,
-                max_tokens= maxtokens,
-            )
+            response = client.chat.completions.create(model="gpt-3.5-turbo-16k",
+            messages= messages,
+            temperature= temperature,
+            max_tokens= maxtokens)
+
 
         try:
-            answer = response['choices'][0]['message']['content']
+            #answer = response['choices'][0]['message']['content']
+            answer = response.choices[0].message.content
         except Exception as e:
             response = {
                 "id": 'error',
@@ -129,7 +130,7 @@ def chat(jsonobject):
                 "model": "custom",
                 "choices": [
                     {
-                    "text": e.message,
+                    "text": e.args,
                     "index": 0,
                     "logprobs": None,
                     "finish_reason": "stop"
@@ -142,11 +143,11 @@ def chat(jsonobject):
                 }
             }
 
-        response['inputmessages'] = messages
+        response.inputmessages = messages
         # response['similarity_array'] = json.dumps(similarity_array)
         # response['text_embedding'] = json.dumps(text_embedding)
-        response['index_of_max1'] = index_of_max1
-        response['index_of_max2'] = index_of_max2
-        response['historystring'] = historystring
+        response.index_of_max1 = index_of_max1
+        response.index_of_max2 = index_of_max2
+        response.historystring = historystring
         #response['alltext'] = alltext
         return response
