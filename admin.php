@@ -89,7 +89,7 @@ if (!empty($blockid)) {
     $limittoblock = "";
 }
 
-$from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodifiedfullname, um.firstname umfirstname, um.lastname umlastname
+$from = " (SELECT ocp.*, $sqlinsert as user, $sqlinsert2 as usermodifiedfullname
             FROM {block_openai_chat_protocol} ocp
         LEFT JOIN {user} u ON ocp.userid=u.id
         LEFT JOIN {user} um ON ocp.usermodified=um.id
