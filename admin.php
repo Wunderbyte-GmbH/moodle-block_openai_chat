@@ -57,7 +57,7 @@ $columns = [
     'userrequest' => get_string('userrequest', 'block_openai_chat'),
     'request' => get_string('request', 'block_openai_chat'),
     'answer' => get_string('answer'),
-    'usermodified' => get_string('usermodified', 'block_openai_chat'),
+    'usermodifiedfullname' => get_string('usermodified', 'block_openai_chat'),
     'timecreated' => get_string('timecreated', 'block_openai_chat'),
     'timemodified' => get_string('timemodified', 'block_openai_chat'),
     'model' => get_string('model', 'block_openai_chat'),
@@ -89,7 +89,7 @@ if (!empty($blockid)) {
     $limittoblock = "";
 }
 
-$from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodified, um.firstname umfirstname, um.lastname umlastname
+$from = " (SELECT ocp.*, $sqlinsert as user, um.firstname umfirstname, um.lastname umlastname, $sqlinsert2 as usermodifiedfullname, um.firstname umfirstname, um.lastname umlastname
             FROM {block_openai_chat_protocol} ocp
         LEFT JOIN {user} u ON ocp.userid=u.id
         LEFT JOIN {user} um ON ocp.usermodified=um.id
