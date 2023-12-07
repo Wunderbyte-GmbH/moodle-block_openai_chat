@@ -1,5 +1,5 @@
 import json
-import openai
+from openai import OpenAI
 import csv
 import os
 from dotenv import load_dotenv
@@ -32,19 +32,20 @@ def chat(jsonobject):
     messages = jsonobject['messages']
 
     start_chat = True
+    client = OpenAI(api_key=apikey)
     while True:
-        openai.api_key = apikey
         question = f"""{query} {historystring} """
 
-        response = openai.Embedding.create(
+        response = client.embeddings.create(
             model="text-embedding-ada-002",
             input=[question]
         )
 
+        response=json.loads(response.json())
         try:
-            question_embedding = response['data'][0]["embedding"]
+            question_embedding = response['data'][0]['embedding']
         except Exception as e:
-            return (e.message)
+            return (e.args)
 
         # Store the similarity scores as the code loops through the CSV
         similarity_array = []
@@ -105,14 +106,14 @@ def chat(jsonobject):
         # return messages
 
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages= messages,
                 temperature= temperature,
                 max_tokens= maxtokens,
             )
         except Exception as e:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo-16k",
                 messages= messages,
                 temperature= temperature,
@@ -120,7 +121,7 @@ def chat(jsonobject):
             )
 
         try:
-            answer = response['choices'][0]['message']['content']
+            answer = response.choices[0].message.content
         except Exception as e:
             response = {
                 "id": 'error',
@@ -129,7 +130,7 @@ def chat(jsonobject):
                 "model": "custom",
                 "choices": [
                     {
-                    "text": e.message,
+                    "text": e.args,
                     "index": 0,
                     "logprobs": None,
                     "finish_reason": "stop"
@@ -142,11 +143,11 @@ def chat(jsonobject):
                 }
             }
 
-        response['inputmessages'] = messages
-        # response['similarity_array'] = json.dumps(similarity_array)
-        # response['text_embedding'] = json.dumps(text_embedding)
-        response['index_of_max1'] = index_of_max1
-        response['index_of_max2'] = index_of_max2
-        response['historystring'] = historystring
-        #response['alltext'] = alltext
+        response.inputmessages = messages
+        # response.similarity_array = json.dumps(similarity_array)
+        # response.text_embedding = json.dumps(text_embedding)
+        response.index_of_max1 = index_of_max1
+        response.index_of_max2 = index_of_max2
+        response.historystring = historystring
+        #response.alltext = alltext
         return response

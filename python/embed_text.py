@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import csv
 import json
 from PyPDF2 import PdfReader
@@ -8,8 +8,8 @@ def create_emb(data, apikey, pathtoembeddings):
     jsonobject = json.loads(data)
 
     text_array = []
-    openai.api_key = apikey
     embeddings_filename = pathtoembeddings
+    client = OpenAI(api_key=apikey)
 
     # Loop through all .txt files in the /training-data folder
     for file in jsonobject['textfilepaths']:
@@ -31,18 +31,15 @@ def create_emb(data, apikey, pathtoembeddings):
     # This array is used to store the embeddings
     embedding_array = []
 
-    if openai.api_key is None or openai.api_key == "YOUR_OPENAI_KEY_HERE":
-        print("Invalid API key")
-        exit()
-
     # Loop through each element of the array
     for text in text_array:
         # Pass the text to the embeddings API which will return a vector and
         # store in the response variable.
-        response = openai.Embedding.create(
+        response = client.embeddings.create(
             input=text,
             model="text-embedding-ada-002"
         )
+        response=json.loads(response.json())
 
         # Extract the embedding from the response object
         embedding = response['data'][0]["embedding"]
