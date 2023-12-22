@@ -103,7 +103,7 @@ class block_openai_chat extends block_base {
                 }
             </style>
             <div id="openai_chat_log">
-
+                ' . $welcometext . '
             </div>
         ';
 
