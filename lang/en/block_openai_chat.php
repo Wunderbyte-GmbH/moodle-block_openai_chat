@@ -102,7 +102,7 @@ $string['sourceoftruthpreamble'] = "Below is a list of questions and their answe
 $string['sourceoftruthreinforcement'] = ' The assistant has been trained to answer by attempting to use the information from the above reference.';
 $string['thisconversationisrecorded'] = 'This conversation is recorded and viewable by your teacher';
 $string['donotsharepersonaldata'] = 'Type message (do NOT share any personal data)';
-$string['thisaimakesmistakes'] = 'This AI sometimes makes mistakes. <a href="https://study-now.eu/">Here is why</a>';
+$string['thisaimakesmistakes'] = 'This AI sometimes makes mistakes. <a href="https://study-now.eu/pluginfile.php/159925/mod_folder/content/0/ELG%20Infobot%20-%20Factsheet.pdf">Here is why</a>';
 $string['descriptionModal'] = 'This is a modal for the creation of an Embeding for your Chatbot. You can either enter text or upload a file';
 
 $string['addknowledge'] = 'Add knowledge';
