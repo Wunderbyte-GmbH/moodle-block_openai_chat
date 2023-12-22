@@ -102,7 +102,7 @@
  $string['sourceoftruthreinforcement'] = 'Der Assistent wurde trainiert, um Antworten zu geben, indem er versucht, die Informationen aus der obigen Referenz zu nutzen.';
  $string['thisconversationisrecorded'] = 'Diese Unterhaltung wird aufgezeichnet und ist vom Administrator einsehbar.';
  $string['donotsharepersonaldata'] = 'Nachricht eingeben (keine persönlichen Daten)';
- $string['thisaimakesmistakes'] = 'Diese KI macht manchmal Fehler. <a href="https://study-now.eu/pluginfile.php/159925/mod_folder/content/0/ELG%20Infobot%20-%20Factsheet.pdf">Das ist der Grund</a>';
+ $string['thisaimakesmistakes'] = 'Diese KI macht manchmal Fehler. <a href="/pluginfile.php/159925/mod_folder/content/0/ELG%20Infobot%20-%20Factsheet.pdf">Das ist der Grund</a>';
  $string['descriptionModal'] = 'Dies ist ein Modal für die Erstellung einer Einbettung für Ihren Chatbot. Sie können entweder Text eingeben oder eine Datei hochladen';
 
  $string['addknowledge'] = 'Wissen hinzufügen';
