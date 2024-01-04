@@ -25,10 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_openai_chat';
-$plugin->version = 2023122200;
+$plugin->version = 2024010400;
 $plugin->requires = 2020061513;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.7.4';
+$plugin->release = '1.7.5';
 $plugin->dependencies = [
     'local_wunderbyte_table' => 2023011200,
 ];
