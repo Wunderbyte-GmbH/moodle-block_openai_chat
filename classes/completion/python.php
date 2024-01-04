@@ -118,7 +118,6 @@ class python extends \block_openai_chat\completion {
             'messages' => $this->format_history_as_messages(),
         ];
 
-
         $arguments = escapeshellarg(json_encode($payload));
 
         $cmd = $this->pathtopython . ' ' . $this->pathtoscript . ' ' . $arguments . ' 2>&1';

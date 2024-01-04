@@ -110,7 +110,7 @@ class completion {
                 get_string('sourceoftruthpreamble', 'block_openai_chat')
                 . $sourceoftruth . "\n\n"
                 . $localsourceoftruth . "\n\n";
-            }
+        }
         $this->sourceoftruth = $sourceoftruth;
     }
 }

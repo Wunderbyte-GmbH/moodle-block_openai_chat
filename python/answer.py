@@ -34,7 +34,7 @@ def chat(jsonobject):
     start_chat = True
     client = OpenAI(api_key=apikey)
     while True:
-        question = f"""{query} {historystring} """
+        question = f"""{query} """
 
         response = client.embeddings.create(
             model="text-embedding-ada-002",
