@@ -38,7 +38,7 @@ defined('MOODLE_INTERNAL') || die();
             $data = (object)[
                 'userid' => $USER->id,
                 'userrequest' =>  $eventdata["other"]["userrequest"],
-                'request' =>  $eventdata["other"]["curlbody"]["prompt"],
+                'request' =>  $eventdata["other"]["curlbody"]["prompt"] ?? $eventdata["other"]["curlbody"]["messages"],
                 'answer' =>  $eventdata["other"]["response"],
                 'blockid' =>  $eventdata["other"]["blockid"],
             ];

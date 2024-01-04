@@ -5,7 +5,7 @@ import json
 import logging
 from answer import chat
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 logging.debug(f"sys.argv[1:]")
 
 data = f"{sys.argv[1]}"
@@ -13,9 +13,7 @@ jsonobject = json.loads(data)
 
 # Pass on the message.
 
-
 response = chat(jsonobject)
+print(response)
 
-#print(x)
-print(json.dumps(response))
 exit(0)

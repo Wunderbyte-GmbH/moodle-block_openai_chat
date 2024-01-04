@@ -42,6 +42,7 @@ def chat(jsonobject):
         )
 
         response=json.loads(response.json())
+
         try:
             question_embedding = response['data'][0]['embedding']
         except Exception as e:
@@ -103,16 +104,16 @@ def chat(jsonobject):
             }
         )
 
-        # return messages
-
         try:
+            print("gpt-4")
             response = client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4-1106-preview",
                 messages= messages,
                 temperature= temperature,
                 max_tokens= maxtokens,
             )
         except Exception as e:
+            print("gpt-3.5-turbo-1106")
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo-16k",
                 messages= messages,
@@ -120,8 +121,12 @@ def chat(jsonobject):
                 max_tokens= maxtokens,
             )
 
+        response = response.json()
+        response = json.loads(response)
+
         try:
-            answer = response.choices[0].message.content
+            answer = response["choices"][0]["message"]["content"]
+
         except Exception as e:
             response = {
                 "id": 'error',
@@ -143,11 +148,11 @@ def chat(jsonobject):
                 }
             }
 
-        response.inputmessages = messages
+        response['inputmessages'] = messages
         # response.similarity_array = json.dumps(similarity_array)
         # response.text_embedding = json.dumps(text_embedding)
-        response.index_of_max1 = index_of_max1
-        response.index_of_max2 = index_of_max2
-        response.historystring = historystring
+        response['index_of_max1'] = index_of_max1
+        response['index_of_max2'] = index_of_max2
+        response['historystring'] = historystring
         #response.alltext = alltext
-        return response
+        return json.dumps(response)

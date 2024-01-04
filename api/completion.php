@@ -82,7 +82,7 @@ if (get_config('block_openai_chat', 'allowinstancesettings') === "1" && $block_s
     $model = $block_settings['model'];
 }
 if (!$model) {
-    $model = 'text-davinci-003';
+    $model = 'gpt-3.5-turbo';
 }
 
 $engine_class = '\block_openai_chat\completion\\' . $engines[$model];

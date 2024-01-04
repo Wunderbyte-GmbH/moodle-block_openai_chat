@@ -22,12 +22,10 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 class block_openai_chat_protocol {
     /**
      * Saves entry to protocol table
-     * @param stdClass $data 
+     * @param stdClass $data
      * @return bool Returns success
      */
     public static function save_entry(stdClass $data): bool {
@@ -37,9 +35,15 @@ class block_openai_chat_protocol {
         $data->timecreated = time();
         $data->timemodified = $data->timemodified ?? time();
         $data->model = get_config('block_openai_chat', 'model');
-        
-        if(property_exists($data, 'id')) {
-            $result = $DB->update_record('block_openai_chat_protocol', $data); 
+
+        if (gettype($data->request) !== 'string') {
+
+            $request = array_map(fn($a) => $a['role'] . ": " . $a['content'], $data->request);
+            $data->request = implode(PHP_EOL, $request);
+        }
+
+        if (property_exists($data, 'id')) {
+            $result = $DB->update_record('block_openai_chat_protocol', $data);
         } else {
             $result = $DB->insert_record('block_openai_chat_protocol', $data);
         }
@@ -51,10 +55,10 @@ class block_openai_chat_protocol {
      * Returns an array of entrys
      *
      * @param integer $id
-     * @return array 
+     * @return array
      */
     public function return_entrys(int $id) {
-        global $DB; 
+        global $DB;
 
         return $DB->get_records('block_openai_chat_protocol', ['id' => $id]);
     }

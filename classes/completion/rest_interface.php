@@ -99,7 +99,7 @@ class rest_interface {
             $modelIdsAndNames[$formattedName] = 'python';
         } else if (stripos($modelName, 'turbo') !== false) {
             $formattedName = str_pad($modelName, 4, '0', STR_PAD_LEFT);
-            $modelIdsAndNames[$formattedName] = 'chat';
+            $modelIdsAndNames[$formattedName] = 'python';
         } else {
             $formattedName = str_pad($modelName, 3, '0', STR_PAD_LEFT);
             $modelIdsAndNames[$formattedName] = 'basic';
